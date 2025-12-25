@@ -7,89 +7,104 @@
   <title>UK Student Cost of Living Tracker</title>
 
   <!-- Modern Font -->
-  <link rel="preconnect"com
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=le>
+  <link rel="preconnect" href="https://fontstps://fonts.googleapis.com/css2?family=Inter:wght@400;lay=swap
+
+  <style>
     :root{
       --bg:#0b0c10;
       --card:rgba(255,255,255,0.08);
-      --blur:10px;
-      --text:#111827;
-      --muted:#6b7280;
+      --blur:12px;
       --ring:#1f6feb;
       --accent:#0ea5e9;
-      --white:#ffffff;
+      --text:#ffffff;
+      --muted:#9ca3af;
     }
-    /* Light/Dark auto */
     @media (prefers-color-scheme: light) {
-      :root{ --bg:#f6f7fb; --card:rgba(255,255,255,0.7); --text:#0f172a; }
-      body{ color:var(--text); }
+      :root{ --bg:#f6f7fb; --card:rgba(255,255,255,0.7); --text:#0f172a; --muted:#6b7280; }
     }
 
     *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--white);
+      color:var(--text);
       min-height:100vh;
       /* London image background + gradient overlay */
       background:
         linear-gradient(180deg, rgba(8,17,28,0.8), rgba(8,17,28,0.85)),
         url('https://images.unsplash.com/photo-1543512218-d4d483b70f37?auto=format&fit=crop&w=1800&q=80')
         center/cover fixed no-repeat;
-      display:flex; align-items:center; justify-content:center;
-      padding:40px 16px;
+      display:grid;
+      grid-template-rows: 1fr auto;
     }
 
+    /* Center wrapper */
+    .center {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:48px 16px;
+    }
     .wrap{
       width:100%;
-      max-width:860px;
+      max-width:900px;
     }
 
+    /* Header */
     .title{
-      margin-bottom:18px;
+      margin:0 0 20px 0;
       font-weight:600;
       letter-spacing:0.2px;
-      color:#e5e7eb;
+      text-align:center;
+    }
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      margin-top:-10px;
+      margin-bottom:18px;
     }
 
+    /* Card */
     .card{
       background:var(--card);
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
-      border-radius:18px;
-      padding:22px;
+      border-radius:20px;
+      padding:24px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.25);
       border:1px solid rgba(255,255,255,0.12);
     }
 
+    /* Layout grid */
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:16px;
+      gap:18px;
     }
-    @media (max-width:840px){ .grid{ grid-template-columns:1fr; } }
+    @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
 
+    /* Fields */
     label{
       font-size:13px;
-      color:#e5e7eb;
+      color:var(--text);
+      opacity:0.95;
       margin-bottom:8px;
       display:block;
     }
-
-    .field{
-      position:relative;
-    }
+    .row{ margin-bottom:12px; }
+    .field{ position:relative; }
     .input{
       width:100%;
-      padding:14px 12px 14px 36px;
+      padding:14px 12px 14px 38px;
       border-radius:12px;
       border:1px solid rgba(255,255,255,0.15);
       background: rgba(255,255,255,0.06);
-      color:#f9fafb;
+      color:var(--text);
       outline:none;
       transition:border-color .2s, box-shadow .2s;
     }
-    .input::placeholder{ color:#9ca3af; }
+    .input::placeholder{ color:var(--muted); }
     .input:focus{
       border-color:var(--ring);
       box-shadow:0 0 0 3px rgba(31,111,235,0.25);
@@ -99,20 +114,30 @@
       color:#93c5fd; font-weight:600;
     }
 
-    .row{ margin-bottom:10px; }
+    /* Topbar */
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .topbar .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .topbar input[type="month"]{
+      padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06); color:var(--text);
+    }
 
+    /* Pills & radios */
     .pill{
       display:inline-flex; gap:8px; align-items:center;
       padding:8px 12px; border-radius:999px;
       background: rgba(255,255,255,0.08);
       border:1px solid rgba(255,255,255,0.15);
-      color:#e5e7eb; font-size:13px;
+      color:var(--text); font-size:13px;
     }
-    .radio{
-      display:flex; gap:8px; align-items:center;
-      font-size:13px; color:#e5e7eb;
-    }
+    .radio{ display:flex; gap:8px; align-items:center; font-size:13px; color:var(--text); }
 
+    /* Buttons */
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
     .btn{
       padding:12px 14px; border:none; border-radius:12px;
       background:var(--accent); color:#082032; font-weight:600;
@@ -122,20 +147,18 @@
     .btn:active{ transform:scale(0.99); }
     .btn.secondary{
       background: rgba(255,255,255,0.12);
-      color:#e5e7eb; border:1px solid rgba(255,255,255,0.18);
+      color:var(--text); border:1px solid rgba(255,255,255,0.18);
     }
     .btn.ghost{
       background:transparent; border:1px dashed rgba(255,255,255,0.25);
-      color:#e5e7eb;
+      color:var(--text);
     }
 
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
-
-    /* Extras list */
+    /* Extras */
     .extras{ display:flex; flex-direction:column; gap:12px; }
     .extra-row{ display:grid; grid-template-columns: 1.2fr 0.8fr; gap:12px; }
 
-    /* Floating Results Panel */
+    /* Floating Results */
     .floating-toggle{
       position:fixed; bottom:22px; right:22px;
       z-index:50;
@@ -148,129 +171,125 @@
       border-radius:16px; padding:16px; z-index:49; display:none;
     }
     .floating-panel.visible{ display:block; }
-    .panel-title{ font-weight:600; color:#e5e7eb; margin-bottom:8px; }
-    .panel-line{ display:flex; justify-content:space-between; margin:6px 0; color:#e5e7eb; }
-    .muted{ color:#9ca3af; font-size:12px; }
+    .panel-title{ font-weight:600; margin-bottom:8px; }
+    .panel-line{ display:flex; justify-content:space-between; margin:6px 0; }
+    .muted{ color:var(--muted); font-size:12px; }
 
-    /* Month + header bar */
-    .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      margin-bottom:14px;
+    /* Footer credit */
+    footer{
+      text-align:center;
+      padding:16px;
+      color:var(--muted);
+      font-size:13px;
     }
-    .topbar .left{ display:flex; gap:12px; align-items:center; }
-    .topbar input[type="month"]{
-      padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.06); color:#e5e7eb;
-    }
-
-    /* Small helper text */
-    .help{ font-size:12px; color:#9ca3af; margin-top:6px; }
+    footer a{ color:#93c5fd; text-decoration:none; }
+    footer a:hover{ text-decoration:underline; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1 class="title">UK Student Cost of Living</h1>
+  <div class="center">
+    <div class="wrap">
+      <h1 class="title">UK Student Cost of Living</h1>
+      <p class="subtitle">A minimal, experimentative budgeting tool for living in London.</p>
 
-    <div class="card">
-      <!-- Top bar: month + quick actions -->
-      <div class="topbar">
-        <div class="left">
-          <label class="pill">
-            <span>Month</span>
-            <input id="monthInput" type="month" />
-          </label>
-          <span class="muted">Pick the month you're budgeting for</span>
-        </div>
-        <div class="actions">
-          <button class="btn secondary" id="resetBtn">Reset</button>
-          <button class="btn" id="exportBtn">Export CSV</button>
-        </div>
-      </div>
-
-      <!-- Base expenses -->
-      <div class="grid">
-        <div>
-          <div class="row">
-            <label>Rent</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="rent" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
+      <div class="card">
+        <!-- Top bar: month + quick actions -->
+        <div class="topbar">
+          <div class="left">
+            <label class="pill">
+              <span>Month</span>
+              <input id="monthInput" type="month" />
+            </label>
+            <span class="muted">Pick the month you're budgeting for</span>
           </div>
-          <div class="row">
-            <label>Council Tax</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="council" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
-          </div>
-          <div class="row">
-            <label>Wi‑Fi / Broadband</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="wifi" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
-          </div>
-          <div class="row">
-            <label>Phone Bill</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="phone" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
-          </div>
-          <div class="row">
-            <label>Credit Card Repayments</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="credit" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
-          </div>
-          <div class="row">
-            <label>Groceries</label>
-            <div class="field">
-              <span class="prefix">£</span>
-              <input id="groceries" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-            </div>
+          <div class="actions">
+            <button class="btn secondary" id="resetBtn">Reset</button>
+            <button class="btn" id="exportBtn">Export CSV</button>
           </div>
         </div>
 
-        <!-- Partner & extras -->
-        <div>
-          <div class="row">
-            <label>Partner Split</label>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <label class="radio"><input id="partnerToggle" type="checkbox"> Add partner split</label>
-              <label class="pill">
-                <input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal
-              </label>
-              <label class="pill">
-                <input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage
-              </label>
-            </div>
-            <div id="percentRow" class="help" style="display:none; margin-top:8px;">
-              <div style="display:flex; gap:10px; align-items:center;">
-                <label class="pill">Your share % <input id="youPct" type="number" min="0" max="100" step="1" value="50" style="width:80px; margin-left:8px;"></label>
-                <span class="muted">Partner % = <span id="partnerPctText">50</span></span>
+        <!-- Two-column grid -->
+        <div class="grid">
+          <!-- Base expenses -->
+          <div>
+            <div class="row">
+              <label>Rent</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="rent" class="input" type="number" placeholder="0.00" min="0" step="0.01">
               </div>
-              <div class="help">Tip: We auto-calc partner % as 100 − your %.</div>
+            </div>
+            <div class="row">
+              <label>Council Tax</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="council" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="row">
+              <label>Wi‑Fi / Broadband</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="wifi" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="row">
+              <label>Phone Bill</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="phone" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="row">
+              <label>Credit Card Repayments</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="credit" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="row">
+              <label>Groceries</label>
+              <div class="field">
+                <span class="prefix">£</span>
+                <input id="groceries" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+              </div>
             </div>
           </div>
 
-          <div class="row">
-            <label>Extra Expenses</label>
-            <div id="extras" class="extras"></div>
-            <div class="actions" style="margin-top:8px;">
-              <button class="btn ghost" id="addExtraBtn">+ Add extra</button>
+          <!-- Partner & extras -->
+          <div>
+            <div class="row">
+              <label>Partner Split</label>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <label class="radio"><input id="partnerToggle" type="checkbox"> Add partner split</label>
+                <label class="pill"><input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal</label>
+                <label class="pill"><input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage</label>
+              </div>
+              <div id="percentRow" class="muted" style="display:none; margin-top:8px;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <label class="pill">Your share % <input id="youPct" type="number" min="0" max="100" step="1" value="50" style="width:80px; margin-left:8px;"></label>
+                  <span>Partner % = <span id="partnerPctText">50</span></span>
+                </div>
+                <div class="muted" style="margin-top:6px;">Tip: Partner % is auto‑calculated as 100 − your %.</div>
+              </div>
             </div>
-            <div class="help">Add a few custom lines (e.g., travel, books, societies, gym).</div>
+
+            <div class="row">
+              <label>Extra Expenses</label>
+              <div id="extras" class="extras"></div>
+              <div class="actions" style="margin-top:8px;">
+                <button class="btn ghost" id="addExtraBtn">+ Add extra</button>
+              </div>
+              <div class="muted">Add custom lines (e.g., travel, books, societies, gym).</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bottom actions -->
-      <div class="actions" style="margin-top:16px;">
-        <button class="btn" id="calcBtn">Calculate</button>
-        <button class="btn secondary" id="togglePanelBtn">View Results</button>
+        <!-- Bottom actions -->
+        <div class="actions" style="margin-top:16px; justify-content:center;">
+          <button class="btn" id="calcBtn">Calculate</button>
+          <button class="btn secondary" id="togglePanelBtn">View Results</button>
+        </div>
       </div>
     </div>
   </div>
@@ -287,6 +306,11 @@
       <div class="muted">Split: <span id="splitDesc">Equal</span></div>
     </div>
   </div>
+
+  <!-- Footer credit -->
+  <footer>
+    Created by <strong>Shounak Bhattacharjee</strong> •
+    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" targetfooter>
 
   <script>
     // ---------- Utilities ----------
@@ -442,12 +466,12 @@
       const extras = gatherExtras();
 
       const month = document.getElementById('monthInput').value || '';
-      txt(monthLabelEl, month ? `• ${month}` : '');
+      monthLabelEl.textContent = month ? `• ${month}` : '';
 
       const monthlyTotal = sumAll(base) + sumAll(extras);
       const yearlyTotal = monthlyTotal * 12;
-      txt(monthlyTotalEl, gbp(monthlyTotal));
-      txt(yearlyTotalEl,  gbp(yearlyTotal));
+      monthlyTotalEl.textContent = gbp(monthlyTotal);
+      yearlyTotalEl.textContent  = gbp(yearlyTotal);
 
       // Partner section
       if (partnerToggle.checked){
@@ -456,14 +480,14 @@
           const youPct = parseFloat(youPctInput.value||0);
           const yourShare = monthlyTotal * (youPct/100);
           const partnerShare = monthlyTotal - yourShare;
-          txt(yourShareEl, gbp(yourShare));
-          txt(partnerShareEl, gbp(partnerShare));
-          txt(splitDescEl, `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`);
+          yourShareEl.textContent = gbp(yourShare);
+          partnerShareEl.textContent = gbp(partnerShare);
+          splitDescEl.textContent = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
         } else {
           const share = monthlyTotal / 2;
-          txt(yourShareEl, gbp(share));
-          txt(partnerShareEl, gbp(share));
-          txt(splitDescEl, 'Equal (50% / 50%)');
+          yourShareEl.textContent = gbp(share);
+          partnerShareEl.textContent = gbp(share);
+          splitDescEl.textContent = 'Equal (50% / 50%)';
         }
       } else {
         partnerBreakEl.style.display = 'none';
