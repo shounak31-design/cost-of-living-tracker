@@ -23,8 +23,8 @@ function addExtraRow(label = '', amount = '') {
   extrasEl.appendChild(row);
   attachLiveUpdate();
 }
-// Add 3 blank extras initially
 addExtraRow(); addExtraRow(); addExtraRow();
+
 addExtraBtn.addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
 
 // ---------- Partner split ----------
@@ -50,6 +50,7 @@ updatePercent();
 const panel          = byId('panel');
 const fabBtn         = byId('fabBtn');
 const togglePanelBtn = byId('togglePanelBtn');
+function openPanel(){ panel.style.display = 'block'; }
 function togglePanel(){ panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none'; }
 fabBtn.addEventListener('click', togglePanel);
 togglePanelBtn.addEventListener('click', togglePanel);
@@ -122,6 +123,10 @@ const partnerShareEl = byId('partnerShare');
 const partnerBreakEl = byId('partnerBreak');
 const splitDescEl    = byId('splitDesc');
 
+// Inline results
+const inlineMonthlyEl = byId('inlineMonthly');
+const inlineYearlyEl  = byId('inlineYearly');
+
 function calculate(){
   const base = [
     ['Rent', val('rent')],
@@ -141,9 +146,16 @@ function calculate(){
 
   const monthlyTotal = [...base, ...extras].reduce((s, [,n]) => s + Number(n||0), 0);
   const yearlyTotal  = monthlyTotal * 12;
+
+  // Update floating panel
   monthlyTotalEl.textContent = gbp(monthlyTotal);
   yearlyTotalEl.textContent  = gbp(yearlyTotal);
 
+  // Update inline summary (always visible)
+  inlineMonthlyEl.textContent = gbp(monthlyTotal);
+  inlineYearlyEl.textContent  = gbp(yearlyTotal);
+
+  // Partner shares
   if (partnerToggle.checked){
     partnerBreakEl.style.display = 'block';
     if (splitPercent.checked){
@@ -164,7 +176,8 @@ function calculate(){
   }
 }
 
-byId('calcBtn').addEventListener('click', calculate);
+// Hook up events
+byId('calcBtn').addEventListener('click', () => { calculate(); openPanel(); });
 
 function attachLiveUpdate(){
   const inputs = document.querySelectorAll('#monthInput, #youPct, #partnerToggle, #splitEqual, #splitPercent, input[type=number], input[type=text]');
