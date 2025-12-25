@@ -125,3 +125,425 @@
           </div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
             <label>Groceries</label>
+            <input id="groceries" class="numinput" type="number" step="0.01" min="0" value="0" oninput="calculate()">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <label>Transport (Oyster/Travel)</label>
+            <input id="transport" class="numinput" type="number" step="0.01" min="0" value="0" oninput="calculate()">
+          </div>
+
+          <div style="margin-top:6px;color:#cbd5e1;font-size:12px;">Per‑person monthly credit card repayments</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <div class="input£"><label>Your credit card</label><span>£</span><input id="ccYou" type="number" step="0.01" min="0" oninput="calculate()"></div>
+            <div class="input£"><label>Partner credit card</label><span>£</span><input id="ccPartner" type="number" step="0.01" min="0" oninput="calculate()"></div>
+          </div>
+
+          <div style="margin-top:12px;color:#cbd5e1;font-size:12px;">Monthly salaries</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <div class="input£"><label>Your salary</label><span>£</span><input id="salaryYou" type="number" step="0.01" min="0" oninput="calculate()"></div>
+            <div class="input£"><label>Partner salary</label><span>£</span><input id="salaryPartner" type="number" step="0.01" min="0" oninput="calculate()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- split -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;">
+        <label><input id="partnerToggle" type="checkbox" onchange="calculate()"> Add partner split</label>
+        <label class="btn ghost" style="padding:6px 10px;"><input type="radio" name="splitType" id="splitEqual" value="equal" checked onchange="showPercent(false);calculate()"> Equal</label>
+        <label class="btn ghost" style="padding:6px 10px;"><input type="radio" name="splitType" id="splitPercent" value="percent" onchange="showPercent(true);calculate()"> Percentage</label>
+        <div id="percentRow" style="display:none;color:#cbd5e1;font-size:12px;">
+          <span>Your share %</span>
+          <input id="youPct" type="number" min="0" max="100" step="1" value="50" oninput="updatePercent();calculate()" style="width:80px;margin-left:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
+          <span style="margin-left:8px;">Partner % = <span id="partnerPctText">50</span></span>
+        </div>
+      </div>
+
+      <!-- Extras -->
+      <div style="margin-top:16px;">
+        <h3>Extra Expenses</h3>
+        <div id="extras"></div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn ghost" onclick="addExtra()">+ Add extra</button>
+        </div>
+        <div style="color:#cbd5e1;font-size:12px;margin-top:6px;">Add custom lines (e.g., books, societies, gifts).</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn" onclick="calculate(); openPanel()">Calculate</button>
+        <button class="btn secondary" onclick="togglePanel()">View Results</button>
+        <button class="btn secondary" onclick="calculate()">Generate Pie Chart</button>
+      </div>
+
+      <!-- Inline totals -->
+      <div class="inline-results">
+        <div>Monthly total: <strong id="inlineMonthly">£0.00</strong></div>
+        <div>Yearly total: <strong id="inlineYearly">£0.00</strong></div>
+        <div style="margin-top:6px;">Combined salary: <strong id="inlineIncome">£0.00</strong></div>
+        <div>Estimated monthly savings: <strong id="inlineSavings">£0.00</strong></div>
+        <div id="inlineSplitSavings" style="display:none;margin-top:4px;">
+          Your savings: <strong id="inlineYourSavings">£0.00</strong> ·
+          Partner savings: <strong id="inlinePartnerSavings">£0.00</strong>
+        </div>
+      </div>
+
+      <!-- Visualisation -->
+      <div class="viz">
+        <h3>Visualisation</h3>
+        <div style="display:grid;grid-template-columns:340px 1fr; gap:16px; align-items:center;">
+          <canvas id="pieCanvas" width="340" height="340"></canvas>
+          <div id="pieLegend" style="font-size:14px;color:#e5e7eb;"></div>
+        </div>
+        <div style="color:#cbd5e1;font-size:12px;margin-top:6px;">
+          Chart shows category shares: Core Bills, Subscriptions, Couple Household, Your CC, Partner CC, Extras.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating panel -->
+  <button class="fab" onclick="togglePanel()">Results</button>
+  <div id="panel" class="panel">
+    <div style="font-weight:600;margin-bottom:8px;">Results <span id="monthLabel" style="color:#cbd5e1;font-size:12px;"></span></div>
+    <div class="panel-line"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
+    <div class="panel-line"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
+    <div class="panel-line"><span>Combined salary</span><strong id="combinedIncome">£0.00</strong></div>
+    <div class="panel-line"><span>Estimated monthly savings</span><strong id="combinedSavings">£0.00</strong></div>
+    <div id="partnerBreak" style="display:none;margin-top:8px;">
+      <div class="panel-line"><span>Your share</span><strong id="yourShare">£0.00</strong></div>
+      <div class="panel-line"><span>Partner share</span><strong id="partnerShare">£0.00</strong></div>
+      <div class="panel-line"><span>Your savings</span><strong id="panelYourSavings">£0.00</strong></div>
+      <div class="panel-line"><span>Partner savings</span><strong id="panelPartnerSavings">£0.00</strong></div>
+      <div style="color:#cbd5e1;font-size:12px;">Split: <span id="splitDesc">Equal</span></div>
+    </div>
+  </div>
+
+  <footer>
+    Created by <strong>Shounak Bhattacharjee</strong> •
+    https://uk.linkedin.com/in/shounakbhattacharjee31LinkedIn</a>
+  </footer>
+
+  <script>
+    /* ---------- helpers ---------- */
+    function el(id){ return document.getElementById(id); }
+    function toGBP(n){ return "£" + (Number(n||0)).toFixed(2); }
+    function num(id){ return parseFloat(el(id).value) || 0; }
+
+    /* ---------- extras ---------- */
+    const extrasEl = el('extras');
+    function addExtra(label='', amount=''){
+      const row = document.createElement('div');
+      row.style.display='grid'; row.style.gridTemplateColumns='1.2fr 0.8fr'; row.style.gap='12px'; row.style.marginBottom='8px';
+      const labelInput = document.createElement('input');
+      labelInput.type='text'; labelInput.placeholder='Label (e.g., Gifts)'; labelInput.value=label;
+      labelInput.className='textinput'; labelInput.style.padding='10px'; labelInput.style.borderRadius='10px';
+      labelInput.style.border='1px solid rgba(255,255,255,0.22)'; labelInput.style.background='rgba(255,255,255,0.10)'; labelInput.style.color='#fff';
+      labelInput.oninput = calculate;
+
+      const amtInput = document.createElement('input');
+      amtInput.type='number'; amtInput.placeholder='0.00'; amtInput.min='0'; amtInput.step='0.01'; amtInput.value=amount;
+      amtInput.className='numinput'; amtInput.style.padding='10px'; amtInput.style.borderRadius='10px';
+      amtInput.style.border='1px solid rgba(255,255,255,0.22)'; amtInput.style.background='rgba(255,255,255,0.10)'; amtInput.style.color='#fff';
+      amtInput.oninput = calculate;
+
+      row.appendChild(labelInput); row.appendChild(amtInput);
+      extrasEl.appendChild(row);
+    }
+    // seed blanks
+    addExtra(); addExtra(); addExtra();
+
+    /* ---------- subscriptions ---------- */
+    const subsCustomEl = el('subsCustom');
+    function addCustomSub(){
+      const val = el('subSelect').value;
+      if(!val) return;
+      const parts = val.split('|');
+      const label = parts[0] || 'Subscription';
+      const amt   = parseFloat(parts[1] || '0').toFixed(2);
+      const row = document.createElement('div');
+      row.style.display='grid'; row.style.gridTemplateColumns='1.2fr 0.8fr'; row.style.gap='12px'; row.style.marginBottom='8px';
+      row.innerHTML = `
+        <input type="text" value="${label}" class="textinput" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+        <input type="number" value="${amt}" step="0.01" min="0" class="numinput" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+      `;
+      subsCustomEl.appendChild(row);
+      Array.from(row.querySelectorAll('input')).forEach(i => i.oninput = calculate);
+      calculate();
+    }
+
+    /* ---------- split controls ---------- */
+    function showPercent(show){ el('percentRow').style.display = show ? 'block' : 'none'; }
+    function updatePercent(){
+      let p = parseFloat(el('youPct').value || 0);
+      if (p<0) p=0; if(p>100) p=100;
+      el('youPct').value = p;
+      el('partnerPctText').textContent = (100 - p).toFixed(0);
+    }
+
+    /* ---------- panel toggles ---------- */
+    function togglePanel(){ const p = el('panel'); p.style.display = (p.style.display==='none'||p.style.display==='') ? 'block' : 'none'; }
+    function openPanel(){ el('panel').style.display='block'; }
+
+    /* ---------- calculation ---------- */
+    const pieCanvas = el('pieCanvas');
+    const pieLegend = el('pieLegend');
+    const ctx = pieCanvas.getContext('2d');
+
+    function gatherSubs(){
+      const list=[];
+      if(el('subNetflix').checked) list.push(['Netflix', parseFloat(el('subNetflixAmt').value||0)]);
+      if(el('subDisney').checked)  list.push(['Disney+', parseFloat(el('subDisneyAmt').value||0)]);
+      if(el('subPrime').checked)   list.push(['Amazon Prime', parseFloat(el('subPrimeAmt').value||0)]);
+      if(el('subSpotify').checked) list.push(['Spotify', parseFloat(el('subSpotifyAmt').value||0)]);
+      Array.from(subsCustomEl.children).forEach(row=>{
+        const inputs=row.querySelectorAll('input');
+        const label=inputs[0].value||'Subscription';
+        const amt=parseFloat(inputs[1].value||0);
+        list.push([label, amt]);
+      });
+      return list;
+    }
+    function gatherExtras(){
+      const list=[];
+      Array.from(extrasEl.children).forEach(row=>{
+        const inputs=row.querySelectorAll('input');
+        const label=inputs[0].value||'Extra';
+        const amt=parseFloat(inputs[1].value||0);
+        list.push([label, amt]);
+      });
+      return list;
+    }
+
+    function calculate(){
+      // shared categories
+      const coreBills = [
+        ['Rent', num('rent')],
+        ['Council Tax', num('council')],
+        ['Electricity', num('electricity')],
+        ['Gas', num('gas')],
+        ['Water', num('water')],
+        ['Wi-Fi', num('wifi')],
+        ['Phone Bill', num('phone')],
+      ];
+      const subs = gatherSubs();
+      const extras = gatherExtras();
+      const coupleHousehold = [
+        ['Household Supplies', num('hhSuppliesAmt')],
+        ['Contents Insurance', num('hhInsuranceAmt')],
+        ['Groceries', num('groceries')],
+        ['Transport', num('transport')],
+      ];
+
+      const sum = arr => arr.reduce((s, [,v]) => s + Number(v||0), 0);
+      const coreTotal   = sum(coreBills);
+      const subsTotal   = sum(subs);
+      const houseTotal  = sum(coupleHousehold);
+      const extrasTotal = sum(extras);
+      const sharedMonthly = coreTotal + subsTotal + houseTotal + extrasTotal;
+
+      // per-person
+      const ccYou     = num('ccYou');
+      const ccPartner = num('ccPartner');
+
+      const youIncome     = num('salaryYou');
+      const partnerIncome = num('salaryPartner');
+      const combinedIncome= youIncome + partnerIncome;
+
+      // split logic
+      let yourShare = 0, partnerShare = 0, splitLabel = 'Not applied';
+      if (el('partnerToggle').checked){
+        if (el('splitPercent').checked){
+          const youPct = parseFloat(el('youPct').value||0);
+          yourShare    = sharedMonthly * (youPct/100);
+          partnerShare = sharedMonthly - yourShare;
+          splitLabel   = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
+        } else {
+          yourShare = partnerShare = sharedMonthly/2;
+          splitLabel = 'Equal (50% / 50%)';
+        }
+      }
+
+      const yourTotalOut    = yourShare + ccYou;
+      const partnerTotalOut = partnerShare + ccPartner;
+      const yourSavings     = youIncome - yourTotalOut;
+      const partnerSavings  = partnerIncome - partnerTotalOut;
+
+      const monthlyTotal    = sharedMonthly + ccYou + ccPartner;
+      const yearlyTotal     = monthlyTotal * 12;
+      const combinedSavings = combinedIncome - monthlyTotal;
+
+      // inline totals
+      el('inlineMonthly').textContent = toGBP(monthlyTotal);
+      el('inlineYearly').textContent  = toGBP(yearlyTotal);
+      el('inlineIncome').textContent  = toGBP(combinedIncome);
+      el('inlineSavings').textContent = toGBP(combinedSavings);
+
+      // panel totals
+      el('monthlyTotal').textContent   = toGBP(monthlyTotal);
+      el('yearlyTotal').textContent    = toGBP(yearlyTotal);
+      el('combinedIncome').textContent = toGBP(combinedIncome);
+      el('combinedSavings').textContent= toGBP(combinedSavings);
+      const m = el('monthInput').value || '';
+      el('monthLabel').textContent = m ? `• ${m}` : '';
+
+      if (el('partnerToggle').checked){
+        el('partnerBreak').style.display='block';
+        el('inlineSplitSavings').style.display='block';
+        el('yourShare').textContent      = toGBP(yourShare);
+        el('partnerShare').textContent   = toGBP(partnerShare);
+        el('panelYourSavings').textContent = toGBP(yourSavings);
+        el('panelPartnerSavings').textContent = toGBP(partnerSavings);
+        el('inlineYourSavings').textContent = toGBP(yourSavings);
+        el('inlinePartnerSavings').textContent = toGBP(partnerSavings);
+        el('splitDesc').textContent = splitLabel;
+      } else {
+        el('partnerBreak').style.display='none';
+        el('inlineSplitSavings').style.display='none';
+      }
+
+      // chart (aggregated)
+      const chartItems = [
+        ['Core Bills', coreTotal],
+        ['Subscriptions', subsTotal],
+        ['Couple Household', houseTotal],
+        ['Your CC', ccYou],
+        ['Partner CC', ccPartner],
+        ['Extras', extrasTotal],
+      ].filter(([,v]) => Number(v||0) > 0);
+      renderPie(chartItems);
+    }
+
+    function renderPie(items){
+      const total = items.reduce((s, [,v]) => s + Number(v||0), 0);
+      ctx.clearRect(0,0,pieCanvas.width,pieCanvas.height);
+
+      // background circle
+      ctx.beginPath(); ctx.arc(170,170,160,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fill();
+
+      if (total <= 0){
+        ctx.fillStyle = '#cbd5e1'; ctx.font = '14px system-ui';
+        ctx.fillText('No data to display', 110, 175);
+        pieLegend.innerHTML = '<div style="color:#cbd5e1">Add amounts to see the chart.</div>';
+        return;
+      }
+
+      const colors = ['#60a5fa','#34d399','#fbbf24','#ef4444','#a78bfa','#22d3ee','#fb7185','#7dd3fc','#f59e0b','#10b981','#eab308','#54c2f7'];
+      let start = -Math.PI/2;
+      pieLegend.innerHTML = '';
+
+      items.forEach(([label,val], i)=>{
+        const angle = (val/total) * Math.PI*2;
+        const end = start + angle;
+        ctx.beginPath(); ctx.moveTo(170,170); ctx.arc(170,170,160,start,end); ctx.closePath();
+        ctx.fillStyle = colors[i % colors.length]; ctx.fill();
+        const sw = `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${colors[i%colors.length]};margin-right:8px;"></span>`;
+        pieLegend.insertAdjacentHTML('beforeend', `<div style="margin:4px 0;">${sw}${label}: <strong>${toGBP(val)}</strong></div>`);
+        start = end;
+      });
+    }
+
+    /* ---------- reset & export ---------- */
+    function resetAll(){
+      ['rent','council','electricity','gas','water','wifi','phone','groceries','transport','hhSuppliesAmt','hhInsuranceAmt','ccYou','ccPartner','salaryYou','salaryPartner'].forEach(id=>{ el(id).value=''; });
+      ['subNetflix','subDisney','subPrime','subSpotify'].forEach(id=>{ el(id).checked=false; });
+      ['subNetflixAmt','subDisneyAmt','subPrimeAmt','subSpotifyAmt'].forEach(id=>{ el(id).value='0'; });
+      el('monthInput').value='';
+      subsCustomEl.innerHTML=''; extrasEl.innerHTML=''; addExtra(); addExtra(); addExtra();
+      el('partnerToggle').checked=false; el('splitEqual').checked=true; el('splitPercent').checked=false; showPercent(false);
+      el('youPct').value=50; updatePercent();
+      calculate();
+    }
+
+    function exportCSV(){
+      const rows=[];
+      const push = (k,v)=>rows.push([k, v]);
+
+      push('Month', el('monthInput').value || 'Unspecified');
+
+      // core bills
+      [['Rent','rent'],['Council Tax','council'],['Electricity','electricity'],['Gas','gas'],['Water','water'],['Wi-Fi','wifi'],['Phone Bill','phone']]
+        .forEach(([k,id])=>push(k, (num(id)).toFixed(2)));
+
+      // subs checked + custom
+      if(el('subNetflix').checked) push('Netflix', (parseFloat(el('subNetflixAmt').value||0)).toFixed(2));
+      if(el('subDisney').checked)  push('Disney+', (parseFloat(el('subDisneyAmt').value||0)).toFixed(2));
+      if(el('subPrime').checked)   push('Amazon Prime', (parseFloat(el('subPrimeAmt').value||0)).toFixed(2));
+      if(el('subSpotify').checked) push('Spotify', (parseFloat(el('subSpotifyAmt').value||0)).toFixed(2));
+      Array.from(subsCustomEl.children).forEach(row=>{
+        const inputs=row.querySelectorAll('input'); push(inputs[0].value || 'Subscription', (parseFloat(inputs[1].value||0)).toFixed(2));
+      });
+
+      // couple household
+      [['Household Supplies','hhSuppliesAmt'],['Contents Insurance','hhInsuranceAmt'],['Groceries','groceries'],['Transport','transport']]
+        .forEach(([k,id])=>push(k, (num(id)).toFixed(2)));
+
+      // extras
+      Array.from(extrasEl.children).forEach(row=>{
+        const inputs=row.querySelectorAll('input'); push(inputs[0].value||'Extra', (parseFloat(inputs[1].value||0)).toFixed(2));
+      });
+
+      // salaries & per-person CC
+      push('Your Salary', (num('salaryYou')).toFixed(2));
+      push('Partner Salary', (num('salaryPartner')).toFixed(2));
+      push('Your Credit Card', (parseFloat(el('ccYou').value||0)).toFixed(2));
+      push('Partner Credit Card', (parseFloat(el('ccPartner').value||0)).toFixed(2));
+
+      // recompute totals used in CSV
+      const sumPairs = arr => arr.reduce((s,[,v]) => s + Number(v||0), 0);
+      const coreT = sumPairs([['Rent',num('rent')],['Council Tax',num('council')],['Electricity',num('electricity')],['Gas',num('gas')],['Water',num('water')],['Wi-Fi',num('wifi')],['Phone Bill',num('phone')]]);
+      let subsT = 0;
+      if(el('subNetflix').checked) subsT += parseFloat(el('subNetflixAmt').value||0);
+      if(el('subDisney').checked)  subsT += parseFloat(el('subDisneyAmt').value||0);
+      if(el('subPrime').checked)   subsT += parseFloat(el('subPrimeAmt').value||0);
+      if(el('subSpotify').checked) subsT += parseFloat(el('subSpotifyAmt').value||0);
+      Array.from(subsCustomEl.children).forEach(row=>{ subsT += parseFloat(row.querySelectorAll('input')[1].value||0); });
+
+      const houseT = num('hhSuppliesAmt') + num('hhInsuranceAmt') + num('groceries') + num('transport');
+      let extrasT = 0; Array.from(extrasEl.children).forEach(row=>{ extrasT += parseFloat(row.querySelectorAll('input')[1].value||0); });
+
+      const sharedMonthly = coreT + subsT + houseT + extrasT;
+      const ccYou = parseFloat(el('ccYou').value||0), ccPartner = parseFloat(el('ccPartner').value||0);
+      const monthlyTotal = sharedMonthly + ccYou + ccPartner;
+      const yearlyTotal  = monthlyTotal * 12;
+      const combinedInc  = num('salaryYou') + num('salaryPartner');
+      const combinedSav  = combinedInc - monthlyTotal;
+
+      push('Monthly Total', monthlyTotal.toFixed(2));
+      push('Yearly Total', yearlyTotal.toFixed(2));
+      push('Combined Salary', combinedInc.toFixed(2));
+      push('Estimated Monthly Savings (Combined)', combinedSav.toFixed(2));
+
+      if(el('partnerToggle').checked){
+        let yourShare, partnerShare, desc;
+        if(el('splitPercent').checked){
+          const youPct = parseFloat(el('youPct').value||0);
+          yourShare = sharedMonthly * (youPct/100);
+          partnerShare = sharedMonthly - yourShare;
+          desc = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
+        } else {
+          yourShare = partnerShare = sharedMonthly/2; desc = 'Equal (50% / 50%)';
+        }
+        const yourSav = num('salaryYou') - (yourShare + ccYou);
+        const prtSav  = num('salaryPartner') - (partnerShare + ccPartner);
+
+        push('Split Type', desc);
+        push('Your Share (Shared)', yourShare.toFixed(2));
+        push('Partner Share (Shared)', partnerShare.toFixed(2));
+        push('Your Savings', yourSav.toFixed(2));
+        push('Partner Savings', prtSav.toFixed(2));
+      }
+
+      const csv = 'data:text/csv;charset=utf-8,' + 'Category,Amount (£)\n' + rows.map(r=>r.join(',')).join('\n');
+      const a = document.createElement('a'); a.href = encodeURI(csv);
+      a.download = `budgeting_monthly_${(el('monthInput').value||'unspecified').replace(/-/g,'_')}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    /* ---------- initial ---------- */
+    // Show percent row based on default radio state
+    showPercent(false);
+    updatePercent();
+    calculate();
+  </script>
+</body>
+</html>
