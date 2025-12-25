@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UK Student Cost of Living Tracker</title>
+  <title>UK Monthly Budgeting Tool</title>
 </head>
 <body
   style="
@@ -23,7 +23,7 @@
   <!-- Centered wrapper -->
   <div style="display:flex;align-items:center;justify-content:center;padding:48px 16px;">
     <div style="width:100%;max-width:900px;">
-      <h1 style="margin:0 0 8px 0;font-weight:700;text-align:center;">UK Student Cost of Living</h1>
+      <h1 style="margin:0 0 8px 0;font-weight:700;text-align:center;">UK Monthly Budgeting Tool</h1>
       <p style="text-align:center;color:#cbd5e1;font-size:14px;margin:0 0 18px 0;">
         A minimal, experimentative budgeting tool for living in London.
       </p>
@@ -91,7 +91,7 @@
               </div>
             </div>
             <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">Electricity</label>
+              <label style="display:block;margin-bottom:8px;">Phone Bill</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
                 <input id="phone" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
@@ -99,7 +99,7 @@
               </div>
             </div>
             <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">Water</label>
+              <label style="display:block;margin-bottom:8px;">Credit Card</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
                 <input id="credit" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
@@ -107,7 +107,7 @@
               </div>
             </div>
             <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">subscriptions</label>
+              <label style="display:block;margin-bottom:8px;">Subscriptions</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
                 <input id="groceries" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
@@ -196,7 +196,10 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" target="_blank"  <!-- Inline JS -->
+    https://uk.linkedin.com/in/shounakbhattacharjee31LinkedIn</a>
+  </footer>
+
+  <!-- Inline JS -->
   <script>
     // Helpers
     function byId(id){ return document.getElementById(id); }
@@ -209,7 +212,7 @@
     const splitPercent = byId('splitPercent');
     const percentRow   = byId('percentRow');
     const youPctInput  = byId('youPct');
-    const partnerPctTx = byId('partnerPctText');
+    the partnerPctTx = byId('partnerPctText');
 
     const inlineMonthly = byId('inlineMonthly');
     const inlineYearly  = byId('inlineYearly');
@@ -282,7 +285,7 @@
         ['Wi‑Fi', num('wifi')],
         ['Phone Bill', num('phone')],
         ['Credit Card', num('credit')],
-        ['Groceries', num('groceries')],
+        ['Subscriptions', num('groceries')],
       ];
       const extras = gatherExtras();
 
@@ -326,7 +329,7 @@
         ['Wi‑Fi', num('wifi')],
         ['Phone Bill', num('phone')],
         ['Credit Card', num('credit')],
-        ['Groceries', num('groceries')],
+        ['Subscriptions', num('groceries')],
       ];
       const extras = gatherExtras();
       const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v||0), 0);
@@ -358,8 +361,8 @@
 
     // View/Reset
     function toggle(el){ el.style.display = (el.style.display==='none' || el.style.display==='') ? 'block' : 'none'; }
-    byId('fabBtn').addEventListener('click', ()=>toggle(panel));
-    byId('togglePanelBtn').addEventListener('click', ()=>toggle(panel));
+    byId('fabBtn').addEventListener('click', () => toggle(panel));
+    byId('togglePanelBtn').addEventListener('click', () => toggle(panel));
 
     byId('resetBtn').addEventListener('click', () => {
       ['rent','council','wifi','phone','credit','groceries'].forEach(id => { byId(id).value=''; });
@@ -384,3 +387,4 @@
   </script>
 </body>
 </html>
+
