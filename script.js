@@ -11,7 +11,6 @@ const addExtraBtn = byId('addExtraBtn');
 function addExtraRow(label = '', amount = '') {
   const row = document.createElement('div');
   row.className = 'extra-row';
-  // Note: external JS avoids any inline </script> parsing issues
   row.innerHTML = `
     <input class="input" type="text" placeholder="Label (e.g., Travel)" value="${label}">
     <div class="field">
@@ -22,7 +21,6 @@ function addExtraRow(label = '', amount = '') {
   extrasEl.appendChild(row);
   attachLiveUpdate();
 }
-// Add 3 blank extras initially
 addExtraRow(); addExtraRow(); addExtraRow();
 
 addExtraBtn.addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
@@ -52,8 +50,7 @@ const fabBtn        = byId('fabBtn');
 const togglePanelBtn= byId('togglePanelBtn');
 
 function togglePanel() {
-  if (panel.classList.contains('visible')) panel.classList.remove('visible');
-  else panel.classList.add('visible');
+  panel.classList.toggle('visible');
 }
 fabBtn.addEventListener('click', togglePanel);
 togglePanelBtn.addEventListener('click', togglePanel);
@@ -193,7 +190,5 @@ function attachLiveUpdate() {
   splitEqual.addEventListener('change', calculate);
   splitPercent.addEventListener('change', calculate);
 }
-
-// Initial hooks
 attachLiveUpdate();
 calculate();
