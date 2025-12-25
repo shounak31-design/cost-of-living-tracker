@@ -196,7 +196,7 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    https://uk.linkedin.com/in/shounakbhattacharjee31LinkedIn</a>
+    <a href="https://in.com/in/shounakbhattacharjee31LinkedIn</a>
   </footer>
 
   <!-- Inline JS -->
@@ -212,7 +212,7 @@
     const splitPercent = byId('splitPercent');
     const percentRow   = byId('percentRow');
     const youPctInput  = byId('youPct');
-    the partnerPctTx = byId('partnerPctText');
+    const partnerPctTx = byId('partnerPctText');  // <-- fixed
 
     const inlineMonthly = byId('inlineMonthly');
     const inlineYearly  = byId('inlineYearly');
@@ -374,12 +374,13 @@
       calculate();
     });
 
-    // Auto-calc on input
+    // Auto-calc on input + click
     ['monthInput','rent','council','wifi','phone','credit','groceries','partnerToggle','splitEqual','splitPercent']
       .forEach(id => byId(id).addEventListener('input', calculate));
     partnerTgl.addEventListener('change', calculate);
     splitEqual.addEventListener('change', calculate);
     splitPercent.addEventListener('change', calculate);
+    byId('calcBtn').addEventListener('click', calculate); // <-- added for good measure
 
     // Initial render
     updatePercent();
@@ -387,4 +388,3 @@
   </script>
 </body>
 </html>
-
