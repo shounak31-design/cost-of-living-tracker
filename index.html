@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Monthly Expenses Tracker</title>
 
-  <!-- Fixes: consistent input styling (incl. Council Tax), visible typed text, more spacing -->
+  <!-- Updates requested:
+    1) Buttons green instead of blue
+    2) Water is now Priority
+    3) Subscriptions split into Netflix / Amazon Prime / Spotify / Other
+    4) Auto-updating pie chart that shows YOUR vs PARTNER split (based on chosen mode)
+  -->
   <style>
     :root{
       --glass-bg: rgba(255,255,255,0.08);
@@ -13,11 +18,12 @@
       --input-bg: rgba(255,255,255,0.10);
       --input-border: rgba(255,255,255,0.22);
       --muted: #cbd5e1;
-      --accent: #0ea5e9;
-      --accent-dark: #082032;
+
+      /* GREEN ACCENT */
+      --accent: #22c55e;         /* green */
+      --accent-dark: #062012;    /* deep green-ish for text on accent */
     }
 
-    /* Make all inputs look the same (overrides odd browser defaults) */
     input[type="number"],
     input[type="text"],
     input[type="month"]{
@@ -25,14 +31,17 @@
       border: 1px solid var(--glass-border) !important;
       color: #fff !important;
       outline: none !important;
-      -webkit-text-fill-color: #fff; /* Safari/iOS typed text visibility */
+      -webkit-text-fill-color: #fff;
       caret-color: #fff;
     }
     input::placeholder{ color: rgba(203,213,225,0.75); }
     input:focus{
-      border-color: rgba(147,197,253,0.85) !important;
-      box-shadow: 0 0 0 3px rgba(14,165,233,0.18);
+      border-color: rgba(134,239,172,0.9) !important; /* green focus */
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
     }
+
+    /* Pie chart labels */
+    .tiny-muted { color:#cbd5e1; font-size:12px; }
   </style>
 </head>
 
@@ -73,77 +82,110 @@
             <button id="resetBtn" style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.16);color:#fff;cursor:pointer;">
               Reset
             </button>
-            <button id="exportBtn" style="padding:12px 14px;border-radius:12px;border:none;background:#0ea5e9;color:#082032;font-weight:700;cursor:pointer;">
+            <button id="exportBtn" style="padding:12px 14px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
               Export CSV
             </button>
           </div>
         </div>
 
-        <!-- Two-column grid (more room + spacing) -->
+        <!-- Two-column grid -->
         <div style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:26px;">
 
           <!-- Expenses -->
           <div>
-            <!-- Common input style -->
-            <!-- Priority bills -->
             <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Rent <span style="color:#93c5fd;font-size:12px;">(Priority)</span></label>
+              <label style="display:block;margin-bottom:10px;">Rent <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
               <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
                 <input id="rent" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
               </div>
             </div>
 
             <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Council Tax <span style="color:#93c5fd;font-size:12px;">(Priority)</span></label>
+              <label style="display:block;margin-bottom:10px;">Council Tax <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
               <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                <!-- FIX: Council input now uses same styling as all others -->
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
                 <input id="council" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
               </div>
             </div>
 
             <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Wi-Fi / Broadband <span style="color:#93c5fd;font-size:12px;">(Priority)</span></label>
+              <label style="display:block;margin-bottom:10px;">Wi-Fi / Broadband <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
               <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
                 <input id="wifi" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
               </div>
             </div>
 
             <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Electricity <span style="color:#93c5fd;font-size:12px;">(Priority)</span></label>
+              <label style="display:block;margin-bottom:10px;">Electricity <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
               <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
                 <input id="electricity" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
               </div>
             </div>
 
-            <!-- Non-priority -->
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Water</label>
+            <!-- Water is now PRIORITY -->
+            <div style="margin-bottom:18px;">
+              <label style="display:block;margin-bottom:10px;">Water <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
               <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
                 <input id="water" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
               </div>
             </div>
 
-            <div style="margin-bottom:10px;">
-              <label style="display:block;margin-bottom:10px;">Subscriptions</label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                <input id="subscriptions" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+            <!-- Subscriptions (split into fields) -->
+            <div style="
+              margin-top:6px;
+              padding:14px;
+              border-radius:16px;
+              border:1px solid rgba(255,255,255,0.16);
+              background:rgba(255,255,255,0.06);
+            ">
+              <div style="font-weight:700;margin-bottom:10px;">Subscriptions</div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="position:relative;">
+                  <div class="tiny-muted" style="margin-bottom:8px;">Netflix</div>
+                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                  <input id="subNetflix" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+                </div>
+
+                <div style="position:relative;">
+                  <div class="tiny-muted" style="margin-bottom:8px;">Amazon Prime</div>
+                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                  <input id="subPrime" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+                </div>
+
+                <div style="position:relative;">
+                  <div class="tiny-muted" style="margin-bottom:8px;">Spotify</div>
+                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                  <input id="subSpotify" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+                </div>
+
+                <div style="position:relative;">
+                  <div class="tiny-muted" style="margin-bottom:8px;">Other subscriptions</div>
+                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+                  <input id="subOther" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+                </div>
+              </div>
+
+              <div class="tiny-muted" style="margin-top:10px;">
+                Subscriptions total: <strong id="subsTotalText">£0.00</strong>
               </div>
             </div>
           </div>
 
-          <!-- Partner & extras -->
+          <!-- Partner, Pie chart & Extras -->
           <div>
             <div style="margin-bottom:16px;">
               <label style="display:block;margin-bottom:10px;">Partner Split</label>
@@ -211,6 +253,77 @@
               </div>
             </div>
 
+            <!-- Auto-updating pie chart (Your vs Partner split) -->
+            <div style="
+              margin-bottom:16px;
+              padding:14px;
+              border-radius:16px;
+              border:1px solid rgba(255,255,255,0.16);
+              background:rgba(255,255,255,0.06);
+            ">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <div>
+                  <div style="font-weight:700;">Split Pie Chart (All Bills)</div>
+                  <div class="tiny-muted">Updates instantly based on split type</div>
+                </div>
+                <button id="toggleChartModeBtn" style="padding:10px 12px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
+                  Show Priority
+                </button>
+              </div>
+
+              <div style="display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center;margin-top:12px;">
+                <!-- SVG pie -->
+                <svg id="pieSvg" width="140" height="140" viewBox="0 0 140 140" style="display:block;">
+                  <!-- background ring -->
+                  <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="18"></circle>
+
+                  <!-- Your slice -->
+                  <circle id="pieYou"
+                          cx="70" cy="70" r="52" fill="none"
+                          stroke="var(--accent)" stroke-width="18"
+                          stroke-linecap="butt"
+                          transform="rotate(-90 70 70)"
+                          stroke-dasharray="0 999"></circle>
+
+                  <!-- Partner slice -->
+                  <circle id="piePartner"
+                          cx="70" cy="70" r="52" fill="none"
+                          stroke="rgba(147,197,253,0.95)" stroke-width="18"
+                          stroke-linecap="butt"
+                          transform="rotate(-90 70 70)"
+                          stroke-dasharray="0 999"></circle>
+
+                  <!-- center text -->
+                  <text id="pieCenterText" x="70" y="74" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="700">100%</text>
+                  <text id="pieCenterSub" x="70" y="92" text-anchor="middle" font-size="10" fill="#cbd5e1">All bills</text>
+                </svg>
+
+                <!-- legend -->
+                <div>
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <span style="width:10px;height:10px;border-radius:999px;background:var(--accent);display:inline-block;"></span>
+                    <div>
+                      <div style="font-weight:700;">You</div>
+                      <div class="tiny-muted"><span id="chartYouPct">0%</span> • <span id="chartYouAmt">£0.00</span></div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="width:10px;height:10px;border-radius:999px;background:rgba(147,197,253,0.95);display:inline-block;"></span>
+                    <div>
+                      <div style="font-weight:700;">Partner</div>
+                      <div class="tiny-muted"><span id="chartPartnerPct">0%</span> • <span id="chartPartnerAmt">£0.00</span></div>
+                    </div>
+                  </div>
+
+                  <div class="tiny-muted" style="margin-top:10px;">
+                    Chart currently showing: <strong id="chartModeLabel">All bills</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Extras -->
             <div style="margin-bottom:10px;">
               <label style="display:block;margin-bottom:10px;">Extra Expenses</label>
               <div id="extras"></div>
@@ -228,7 +341,7 @@
 
         <!-- Inline results summary (live) -->
         <div id="inlineResults" style="margin-top:18px;text-align:center;color:#e5e7eb;">
-          <div>Priority bills (Rent + Electricity + Council Tax + Wi-Fi): <strong id="inlinePriority">£0.00</strong></div>
+          <div>Priority bills (Rent + Electricity + Council Tax + Wi-Fi + Water): <strong id="inlinePriority">£0.00</strong></div>
           <div style="margin-top:8px;">Monthly total: <strong id="inlineMonthly">£0.00</strong></div>
           <div>Yearly total: <strong id="inlineYearly">£0.00</strong></div>
         </div>
@@ -238,7 +351,7 @@
   </div>
 
   <!-- Floating Results -->
-  <button id="fabBtn" style="position:fixed;bottom:22px;right:22px;padding:12px 14px;border-radius:999px;border:none;background:#0ea5e9;color:#082032;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+  <button id="fabBtn" style="position:fixed;bottom:22px;right:22px;padding:12px 14px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
     Results
   </button>
 
@@ -303,6 +416,8 @@
     const inlineMonthly = byId('inlineMonthly');
     const inlineYearly  = byId('inlineYearly');
 
+    const subsTotalText = byId('subsTotalText');
+
     const priorityTotalEl = byId('priorityTotal');
     const monthlyTotalEl  = byId('monthlyTotal');
     const yearlyTotalEl   = byId('yearlyTotal');
@@ -321,7 +436,21 @@
     const youLeftoverEl = byId('youLeftover');
     const partnerLeftoverEl = byId('partnerLeftover');
 
-    // Extras rows
+    // Pie chart elements
+    const pieYou = byId('pieYou');
+    const piePartner = byId('piePartner');
+    const pieCenterText = byId('pieCenterText');
+    const pieCenterSub = byId('pieCenterSub');
+    const chartYouPct = byId('chartYouPct');
+    const chartPartnerPct = byId('chartPartnerPct');
+    const chartYouAmt = byId('chartYouAmt');
+    const chartPartnerAmt = byId('chartPartnerAmt');
+    const chartModeLabel = byId('chartModeLabel');
+    const toggleChartModeBtn = byId('toggleChartModeBtn');
+
+    // Chart mode: "all" or "priority"
+    let chartMode = 'all';
+
     function addExtraRow(label='', amount=''){
       const row = document.createElement('div');
       row.style.display = 'grid';
@@ -343,7 +472,6 @@
       amountInput.value = amount;
       amountInput.style.cssText = 'width:100%;padding:12px;border-radius:12px;';
 
-      // LIVE calc on input
       labelInput.addEventListener('input', calculate);
       amountInput.addEventListener('input', calculate);
 
@@ -360,7 +488,6 @@
       calculate();
     });
 
-    // Percent UI
     function updatePercent(){
       let p = parseFloat(youPctInput.value || 0);
       if (isNaN(p)) p = 0;
@@ -370,7 +497,6 @@
       partnerPctTx.textContent = (100 - p).toFixed(0);
     }
 
-    // Gather extras
     function gatherExtras(){
       return Array.from(extrasEl.children).map(row=>{
         const inputs = row.querySelectorAll('input');
@@ -380,7 +506,6 @@
       });
     }
 
-    // Split helpers
     function incomeRatio(){
       const yi = parseFloat(youIncome.value || 0) || 0;
       const pi = parseFloat(partnerIncome.value || 0) || 0;
@@ -396,14 +521,49 @@
       return 'income_all';
     }
 
-    // LIVE calculate
+    // Render pie chart using stroke-dasharray on circles
+    function updatePieChart(youAmount, partnerAmount, totalAmount, labelText){
+      const r = 52;
+      const circumference = 2 * Math.PI * r;
+
+      const safeTotal = (totalAmount > 0) ? totalAmount : 1;
+      const youPct = Math.max(0, Math.min(1, youAmount / safeTotal));
+      const partnerPct = Math.max(0, Math.min(1, partnerAmount / safeTotal));
+
+      // You slice first, then partner slice starts where you ended.
+      const youLen = circumference * youPct;
+      const partnerLen = circumference * partnerPct;
+
+      pieYou.setAttribute('stroke-dasharray', `${youLen} ${circumference - youLen}`);
+      pieYou.setAttribute('stroke-dashoffset', `0`);
+
+      piePartner.setAttribute('stroke-dasharray', `${partnerLen} ${circumference - partnerLen}`);
+      piePartner.setAttribute('stroke-dashoffset', `${-youLen}`);
+
+      pieCenterText.textContent = totalAmount > 0 ? `${Math.round(youPct*100)}% / ${Math.round(partnerPct*100)}%` : `0% / 0%`;
+      pieCenterSub.textContent = labelText;
+
+      chartYouPct.textContent = `${Math.round(youPct*100)}%`;
+      chartPartnerPct.textContent = `${Math.round(partnerPct*100)}%`;
+      chartYouAmt.textContent = toGBP(youAmount);
+      chartPartnerAmt.textContent = toGBP(partnerAmount);
+      chartModeLabel.textContent = labelText;
+    }
+
     function calculate(){
       const rent = num('rent');
       const council = num('council');
       const wifi = num('wifi');
       const electricity = num('electricity');
       const water = num('water');
-      const subs = num('subscriptions');
+
+      // Subscriptions total from fields
+      const subNetflix = num('subNetflix');
+      const subPrime   = num('subPrime');
+      const subSpotify = num('subSpotify');
+      const subOther   = num('subOther');
+      const subsTotal  = subNetflix + subPrime + subSpotify + subOther;
+      subsTotalText.textContent = toGBP(subsTotal);
 
       const base = [
         ['Rent', rent],
@@ -411,14 +571,18 @@
         ['Wi-Fi', wifi],
         ['Electricity', electricity],
         ['Water', water],
-        ['Subscriptions', subs]
+        ['Netflix', subNetflix],
+        ['Amazon Prime', subPrime],
+        ['Spotify', subSpotify],
+        ['Other Subscriptions', subOther]
       ];
 
       const extras = gatherExtras();
       const monthly = [...base, ...extras].reduce((s, [,v]) => s + (Number(v) || 0), 0);
       const yearly = monthly * 12;
 
-      const priority = rent + electricity + council + wifi;
+      // PRIORITY now includes Water
+      const priority = rent + electricity + council + wifi + water;
       const nonPriority = Math.max(0, monthly - priority);
 
       // Update totals live
@@ -434,12 +598,15 @@
       monthLabelEl.textContent = m ? `• ${m}` : '';
 
       // Partner split live
+      let yourAll = monthly;
+      let partnerAll = 0;
+      let yourPri = priority;
+      let partnerPri = 0;
+
       if (partnerTgl.checked){
         partnerBreakEl.style.display = 'block';
 
         const mode = currentSplitMode();
-        let yourAll = 0, partnerAll = 0;
-        let yourPri = 0, partnerPri = 0;
 
         if (mode === 'percent'){
           const youPct = parseFloat(youPctInput.value || 0) || 0;
@@ -498,6 +665,16 @@
         partnerBreakEl.style.display = 'none';
         warnBox.style.display = 'none';
       }
+
+      // Update pie chart regardless of partner toggle:
+      // If partner toggle OFF, partner slice will be 0 and your slice 100%.
+      if (chartMode === 'priority'){
+        updatePieChart(yourPri, partnerPri, (yourPri + partnerPri), 'Priority bills');
+        toggleChartModeBtn.textContent = 'Show All';
+      } else {
+        updatePieChart(yourAll, partnerAll, (yourAll + partnerAll), 'All bills');
+        toggleChartModeBtn.textContent = 'Show Priority';
+      }
     }
 
     function refreshPartnerUI(){
@@ -514,10 +691,19 @@
     }
     byId('fabBtn').addEventListener('click', ()=>toggle(byId('panel')));
 
-    // LIVE wiring (input + change)
+    // Chart mode toggle
+    toggleChartModeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      chartMode = (chartMode === 'all') ? 'priority' : 'all';
+      calculate();
+    });
+
+    // LIVE wiring
     [
-      'monthInput','rent','council','wifi','electricity','water','subscriptions',
-      'youIncome','partnerIncome','youPct'
+      'monthInput','rent','council','wifi','electricity','water',
+      'subNetflix','subPrime','subSpotify','subOther',
+      'youIncome','partnerIncome','youPct',
+      'partnerToggle'
     ].forEach(id => byId(id).addEventListener('input', calculate));
 
     partnerTgl.addEventListener('change', refreshPartnerUI);
@@ -536,7 +722,11 @@
       const wifi = num('wifi');
       const electricity = num('electricity');
       const water = num('water');
-      const subs = num('subscriptions');
+
+      const subNetflix = num('subNetflix');
+      const subPrime   = num('subPrime');
+      const subSpotify = num('subSpotify');
+      const subOther   = num('subOther');
 
       const base = [
         ['Rent', rent],
@@ -544,14 +734,17 @@
         ['Wi-Fi', wifi],
         ['Electricity', electricity],
         ['Water', water],
-        ['Subscriptions', subs]
+        ['Netflix', subNetflix],
+        ['Amazon Prime', subPrime],
+        ['Spotify', subSpotify],
+        ['Other Subscriptions', subOther]
       ];
-      const extras = gatherExtras();
 
+      const extras = gatherExtras();
       const monthly = [...base, ...extras].reduce((s, [,v]) => s + (Number(v)||0), 0);
       const yearly = monthly * 12;
 
-      const priority = rent + electricity + council + wifi;
+      const priority = rent + electricity + council + wifi + water;
       const nonPriority = Math.max(0, monthly - priority);
 
       const rows = [
@@ -625,7 +818,8 @@
     // Reset
     byId('resetBtn').addEventListener('click', () => {
       [
-        'rent','council','wifi','electricity','water','subscriptions',
+        'rent','council','wifi','electricity','water',
+        'subNetflix','subPrime','subSpotify','subOther',
         'youIncome','partnerIncome'
       ].forEach(id => byId(id).value='');
 
@@ -643,6 +837,7 @@
       extrasEl.innerHTML = '';
       addExtraRow(); addExtraRow(); addExtraRow();
 
+      chartMode = 'all';
       refreshPartnerUI();
       calculate();
     });
