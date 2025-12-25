@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Student Cost of Living Tracker</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: url('https://upload.wikimedia.org/wikipedia/commons/c/cd/London_Montage_L.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 500px;
+        margin: 50px auto;
+        background: rgba(255,255,255,0.9);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        background: #0078D7;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background: #005fa3;
+    }
+    .result {
+        margin-top: 15px;
+        font-size: 18px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Cost of Living Tracker</h1>
+    <input type="number" id="rent" placeholder="Rent (£)">
+    <input type="number" id="council" placeholder="Council Tax (£)">
+    <input type="number" id="wifi" placeholder="Wi-Fi (£)">
+    <input type="number" id="phone" placeholder="Phone Bill (£)">
+    <input type="number" id="credit" placeholder="Credit Card (£)">
+    <input type="number" id="groceries" placeholder="Groceries (£)">
+    <button onclick="calculate()">Calculate</button>
+    <button onclick="exportCSV()">Export as CSV</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function calculate() {
+    let rent = parseFloat(document.getElementById('rent').value) || 0;
+    let council = parseFloat(document.getElementById('council').value) || 0;
+    let wifi = parseFloat(document.getElementById('wifi').value) || 0;
+    let phone = parseFloat(document.getElementById('phone').value) || 0;
+    let credit = parseFloat(document.getElementById('credit').value) || 0;
+    let groceries = parseFloat(document.getElementById('groceries').value) || 0;
+
+    let monthlyTotal = rent + council + wifi + phone + credit + groceries;
+    let yearlyTotal = monthlyTotal * 12;
+
+    document.getElementById('result').innerHTML = 
+        `Monthly Total: £${monthlyTotal.toFixed(2)}<br>Yearly Total: £${yearlyTotal.toFixed(2)}`;
+}
+
+function exportCSV() {
+    let rent = document.getElementById('rent').value || 0;
+    let council = document.getElementById('council').value || 0;
+    let wifi = document.getElementById('wifi').value || 0;
+    let phone = document.getElementById('phone').value || 0;
+    let credit = document.getElementById('credit').value || 0;
+    let groceries = document.getElementById('groceries').value || 0;
+
+    let monthlyTotal = parseFloat(rent) + parseFloat(council) + parseFloat(wifi) + parseFloat(phone) + parseFloat(credit) + parseFloat(groceries);
+    let yearlyTotal = monthlyTotal * 12;
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + "Category,Amount (£)\n"
+        + `Rent,${rent}\nCouncil Tax,${council}\nWi-Fi,${wifi}\nPhone Bill,${phone}\nCredit Card,${credit}\nGroceries,${groceries}\nMonthly Total,${monthlyTotal}\nYearly Total,${yearlyTotal}`;
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "cost_of_living.csv");
+    document.body.appendChild(link);
+    link.click();
+}
+</script>
+</body>
+</html>
+``
