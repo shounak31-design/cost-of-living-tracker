@@ -70,7 +70,7 @@
               <label style="display:block;margin-bottom:8px;">Rent</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="rent" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="rent" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -78,7 +78,7 @@
               <label style="display:block;margin-bottom:8px;">Council Tax</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="council" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="council" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -86,7 +86,7 @@
               <label style="display:block;margin-bottom:8px;">Wi‑Fi / Broadband</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="wifi" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="wifi" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -94,7 +94,7 @@
               <label style="display:block;margin-bottom:8px;">Phone Bill</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="phone" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="phone" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -102,7 +102,7 @@
               <label style="display:block;margin-bottom:8px;">Credit Card Repayments</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="credit" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="credit" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -110,7 +110,7 @@
               <label style="display:block;margin-bottom:8px;">Groceries</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="groceries" type="number" placeholder="0.00" step="0.01" min="0"
+                <input id="groceries" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
@@ -196,20 +196,33 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    https://uk.linkedin.com/in/shounakbhattacharjee31LinkedIn</a>
-  </footer>
-
-  <!-- Inline JS (robust, no external files) -->
+    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" target="_blank"  <!-- Inline JS -->
   <script>
-    // ---- helpers ----
-    const £ = id => document.getElementById(id);
-    const gbp = n => "£" + (Number(n || 0)).toFixed(2);
-    const num = id => parseFloat(£(id).value) || 0;
+    // Helpers
+    function byId(id){ return document.getElementById(id); }
+    function toGBP(n){ return "£" + (Number(n || 0)).toFixed(2); }
+    function num(id){ return parseFloat(byId(id).value) || 0; }
 
-    // ---- extras ----
-    const extrasEl = $('extras');
-    function $('id'){ return document.getElementById(id); }
+    const extrasEl     = byId('extras');
+    const partnerTgl   = byId('partnerToggle');
+    const splitEqual   = byId('splitEqual');
+    const splitPercent = byId('splitPercent');
+    const percentRow   = byId('percentRow');
+    const youPctInput  = byId('youPct');
+    const partnerPctTx = byId('partnerPctText');
 
+    const inlineMonthly = byId('inlineMonthly');
+    const inlineYearly  = byId('inlineYearly');
+    const monthlyTotalEl= byId('monthlyTotal');
+    const yearlyTotalEl = byId('yearlyTotal');
+    const monthLabelEl  = byId('monthLabel');
+    const yourShareEl   = byId('yourShare');
+    const partnerShareEl= byId('partnerShare');
+    const partnerBreakEl= byId('partnerBreak');
+    const splitDescEl   = byId('splitDesc');
+    const panel         = byId('panel');
+
+    // Extras rows
     function addExtraRow(label='', amount=''){
       const row = document.createElement('div');
       row.style.display = 'grid';
@@ -222,6 +235,7 @@
       labelInput.placeholder = 'Label (e.g., Travel)';
       labelInput.value = label;
       labelInput.style.cssText = 'width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;';
+      labelInput.addEventListener('input', calculate);
 
       const amountInput = document.createElement('input');
       amountInput.type = 'number';
@@ -230,51 +244,30 @@
       amountInput.step = '0.01';
       amountInput.value = amount;
       amountInput.style.cssText = 'width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;';
+      amountInput.addEventListener('input', calculate);
 
       row.appendChild(labelInput);
       row.appendChild(amountInput);
       extrasEl.appendChild(row);
-      [labelInput, amountInput].forEach(el => el.addEventListener('input', calculate));
     }
-
     addExtraRow(); addExtraRow(); addExtraRow();
-    $('addExtraBtn').addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
+    byId('addExtraBtn').addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
 
-    // ---- partner split ----
-    const partnerToggle = $('partnerToggle');
-    const splitEqual    = $('splitEqual');
-    const splitPercent  = $('splitPercent');
-    const percentRow    = $('percentRow');
-    const youPctInput   = $('youPct');
-    const partnerPctText= $('partnerPctText');
-
+    // Percent UI
     function updatePercent(){
-      let youPct = parseFloat(youPctInput.value || 0);
-      if (youPct < 0) youPct = 0;
-      if (youPct > 100) youPct = 100;
-      youPctInput.value = youPct;
-      partnerPctText.textContent = (100 - youPct).toFixed(0);
-      calculate();
+      let p = parseFloat(youPctInput.value || 0);
+      if (p < 0) p = 0;
+      if (p > 100) p = 100;
+      youPctInput.value = p;
+      partnerPctTx.textContent = (100 - p).toFixed(0);
     }
-    youPctInput.addEventListener('input', updatePercent);
+    youPctInput.addEventListener('input', () => { updatePercent(); calculate(); });
     splitPercent.addEventListener('change', () => { percentRow.style.display='block'; calculate(); });
-    splitEqual.addEventListener('change', ()  => { percentRow.style.display='none';  calculate(); });
+    splitEqual.addEventListener('change', () => { percentRow.style.display='none';  calculate(); });
 
-    // ---- results targets ----
-    const inlineMonthly = $('inlineMonthly');
-    const inlineYearly  = $('inlineYearly');
-    const monthlyTotalEl= $('monthlyTotal');
-    const yearlyTotalEl = $('yearlyTotal');
-    const monthLabelEl  = $('monthLabel');
-    const yourShareEl   = $('yourShare');
-    const partnerShareEl= $('partnerShare');
-    const partnerBreakEl= $('partnerBreak');
-    const splitDescEl   = $('splitDesc');
-
-    // ---- calculate ----
+    // Calculate
     function gatherExtras(){
-      const rows = Array.from(extrasEl.children);
-      return rows.map(row => {
+      return Array.from(extrasEl.children).map(row=>{
         const inputs = row.querySelectorAll('input');
         const label  = inputs[0].value || 'Extra';
         const amount = parseFloat(inputs[1].value || 0);
@@ -293,31 +286,30 @@
       ];
       const extras = gatherExtras();
 
-      const monthlyTotal = [...base, ...extras].reduce((s,[,v]) => s + Number(v||0), 0);
-      const yearlyTotal  = monthlyTotal * 12;
+      const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v || 0), 0);
+      const yearly  = monthly * 12;
 
-      inlineMonthly.textContent = gbp(monthlyTotal);
-      inlineYearly.textContent  = gbp(yearlyTotal);
+      inlineMonthly.textContent = toGBP(monthly);
+      inlineYearly.textContent  = toGBP(yearly);
+      monthlyTotalEl.textContent = toGBP(monthly);
+      yearlyTotalEl.textContent  = toGBP(yearly);
 
-      monthlyTotalEl.textContent = gbp(monthlyTotal);
-      yearlyTotalEl.textContent  = gbp(yearlyTotal);
+      const m = byId('monthInput').value || '';
+      monthLabelEl.textContent = m ? `• ${m}` : '';
 
-      const month = $('monthInput').value || '';
-      monthLabelEl.textContent = month ? `• ${month}` : '';
-
-      if (partnerToggle.checked){
+      if (partnerTgl.checked){
         partnerBreakEl.style.display = 'block';
         if (splitPercent.checked){
           const youPct = parseFloat(youPctInput.value || 0);
-          const yourShare    = monthlyTotal * (youPct/100);
-          const partnerShare = monthlyTotal - yourShare;
-          yourShareEl.textContent    = gbp(yourShare);
-          partnerShareEl.textContent = gbp(partnerShare);
+          const yourShare    = monthly * (youPct/100);
+          const partnerShare = monthly - yourShare;
+          yourShareEl.textContent    = toGBP(yourShare);
+          partnerShareEl.textContent = toGBP(partnerShare);
           splitDescEl.textContent    = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
         } else {
-          const share = monthlyTotal / 2;
-          yourShareEl.textContent    = gbp(share);
-          partnerShareEl.textContent = gbp(share);
+          const share = monthly / 2;
+          yourShareEl.textContent    = toGBP(share);
+          partnerShareEl.textContent = toGBP(share);
           splitDescEl.textContent    = 'Equal (50% / 50%)';
         }
       } else {
@@ -325,9 +317,9 @@
       }
     }
 
-    // ---- export ----
-    $('exportBtn').addEventListener('click', () => {
-      const month = $('monthInput').value || 'Unspecified';
+    // Export CSV
+    byId('exportBtn').addEventListener('click', () => {
+      const month = byId('monthInput').value || 'Unspecified';
       const base = [
         ['Rent', num('rent')],
         ['Council Tax', num('council')],
@@ -337,20 +329,20 @@
         ['Groceries', num('groceries')],
       ];
       const extras = gatherExtras();
-      const monthlyTotal = [...base, ...extras].reduce((s,[,v]) => s + Number(v||0), 0);
-      const yearlyTotal = monthlyTotal * 12;
+      const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v||0), 0);
+      const yearly  = monthly * 12;
 
-      let rows = [['Month', month], ...base, ...extras, ['Monthly Total', monthlyTotal.toFixed(2)], ['Yearly Total', yearlyTotal.toFixed(2)]];
-      if (partnerToggle.checked){
+      const rows = [['Month', month], ...base, ...extras, ['Monthly Total', monthly.toFixed(2)], ['Yearly Total', yearly.toFixed(2)]];
+      if (partnerTgl.checked){
         if (splitPercent.checked){
           const youPct = parseFloat(youPctInput.value || 0);
-          const yourShare = monthlyTotal * (youPct/100);
-          const partnerShare = monthlyTotal - yourShare;
+          const yourShare    = monthly * (youPct/100);
+          const partnerShare = monthly - yourShare;
           rows.push(['Split Type', `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`]);
           rows.push(['Your Share (Monthly)', yourShare.toFixed(2)]);
           rows.push(['Partner Share (Monthly)', partnerShare.toFixed(2)]);
         } else {
-          const share = monthlyTotal/2;
+          const share = monthly / 2;
           rows.push(['Split Type', 'Equal (50% / 50%)']);
           rows.push(['Your Share (Monthly)', share.toFixed(2)]);
           rows.push(['Partner Share (Monthly)', share.toFixed(2)]);
@@ -364,29 +356,30 @@
       document.body.appendChild(a); a.click(); a.remove();
     });
 
-    // ---- view / reset ----
-    function toggle(el){ el.style.display = (el.style.display==='none'||el.style.display==='') ? 'block' : 'none'; }
-    $('fabBtn').addEventListener('click', ()=>toggle($('panel')));
-    $('togglePanelBtn').addEventListener('click', ()=>toggle($('panel')));
+    // View/Reset
+    function toggle(el){ el.style.display = (el.style.display==='none' || el.style.display==='') ? 'block' : 'none'; }
+    byId('fabBtn').addEventListener('click', ()=>toggle(panel));
+    byId('togglePanelBtn').addEventListener('click', ()=>toggle(panel));
 
-    $('resetBtn').addEventListener('click', () => {
-      ['rent','council','wifi','phone','credit','groceries'].forEach(id => { $(id).value=''; });
-      $('monthInput').value = '';
-      partnerToggle.checked = false;
+    byId('resetBtn').addEventListener('click', () => {
+      ['rent','council','wifi','phone','credit','groceries'].forEach(id => { byId(id).value=''; });
+      byId('monthInput').value = '';
+      partnerTgl.checked = false;
       splitEqual.checked = true; splitPercent.checked = false; percentRow.style.display='none';
       youPctInput.value = 50; updatePercent();
       extrasEl.innerHTML = ''; addExtraRow(); addExtraRow(); addExtraRow();
       calculate();
     });
 
-    // ---- auto-calc on input ----
+    // Auto-calc on input
     ['monthInput','rent','council','wifi','phone','credit','groceries','partnerToggle','splitEqual','splitPercent']
-      .forEach(id => $(id).addEventListener('input', calculate));
-    partnerToggle.addEventListener('change', calculate);
+      .forEach(id => byId(id).addEventListener('input', calculate));
+    partnerTgl.addEventListener('change', calculate);
     splitEqual.addEventListener('change', calculate);
     splitPercent.addEventListener('change', calculate);
 
-    // initial render
+    // Initial render
+    updatePercent();
     calculate();
   </script>
 </body>
