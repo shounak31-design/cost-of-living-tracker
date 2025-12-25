@@ -7,20 +7,33 @@
   <title>UK Student Cost of Living Tracker</title>
 
   <!-- Inter font -->
-  <link rel="preconnect"com
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&
+  <link rel="preconnect" href="https://fonts.gstatic.comgoogleapis.com/css2?family=Inter:wght@400;500;600&display= Absolute CSS URL (ensures correct path) -->
+  <link rel="stylesheet" href="https://shounak31-design.github.io.css
 
-  <!-- External CSS (ensures styles always load) -->
-  style.css
-
-  <!-- (Optional) Relax CSP for fonts/images on some setups -->
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self';
-                 style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
-                 font-src https://fonts.gstatic.com;
-                 img-src 'self' https://images.unsplash.com data:;
-                 script-src 'self' 'unsafe-inline';
-                 connect-src 'self';">
+  <!-- Minimal inline fallback to prove styling applies even if external CSS fails -->
+  <style>
+    html,body{height:100%;margin:0}
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:#fff;
+      background:
+        linear-gradient(180deg, rgba(8,17,28,0.80), rgba(8,17,28,0.85)),
+        url('https://images.unsplash.com/photo-1543512218-d4d483b70f37?auto=format&fit=crop&w=1800&q=80')
+        center/cover no-repeat fixed;
+      display:grid; grid-template-rows:1fr auto;
+    }
+    .center{display:flex;align-items:center;justify-content:center;padding:48px 16px}
+    .wrap{width:100%;max-width:900px}
+    .card{background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,0.18)}
+    .title{margin:0 0 8px 0;font-weight:600;text-align:center}
+    .subtitle{text-align:center;color:#cbd5e1;font-size:14px;margin:0 0 18px 0}
+    label{display:block;color:#fff}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .btn{padding:10px 12px;border-radius:12px;border:none;background:#0ea5e9;color:#082032;font-weight:600;cursor:pointer}
+    .btn.secondary{background:rgba(255,255,255,0.16);color:#fff;border:1px solid rgba(255,255,255,0.22)}
+    footer{text-align:center;padding:14px;color:#cbd5e1;font-size:13px}
+    footer a{color:#93c5fd;text-decoration:none}
+  </style>
 </head>
 <body>
   <div class="center">
@@ -30,13 +43,13 @@
 
       <div class="card">
         <!-- Top bar -->
-        <div class="topbar">
-          <div class="left">
-            <label class="pill">
-              <span>Month</span>
+        <div class="actions" style="justify-content:space-between">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <label style="display:flex;gap:10px;align-items:center">
+              <span style="color:#cbd5e1;font-size:12px">Month</span>
               <input id="monthInput" type="month" />
             </label>
-            <span class="muted">Pick the month you're budgeting for</span>
+            <span style="color:#cbd5e1;font-size:12px">Pick the month you're budgeting for</span>
           </div>
           <div class="actions">
             <button class="btn secondary" id="resetBtn">Reset</button>
@@ -44,79 +57,43 @@
           </div>
         </div>
 
-        <!-- Grid -->
-        <div class="grid">
+        <!-- Two-column grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px">
           <!-- Base expenses -->
           <div>
-            <div class="row">
-              <label>Rent</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="rent" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
-            <div class="row">
-              <label>Council Tax</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="council" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
-            <div class="row">
-              <label>Wi‑Fi / Broadband</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="wifi" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
-            <div class="row">
-              <label>Phone Bill</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="phone" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
-            <div class="row">
-              <label>Credit Card Repayments</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="credit" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
-            <div class="row">
-              <label>Groceries</label>
-              <div class="field"><span class="prefix">£</span>
-                <input id="groceries" class="input" type="number" placeholder="0.00" min="0" step="0.01">
-              </div>
-            </div>
+            <label>Rent</label><input id="rent" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
+            <label>Council Tax</label><input id="council" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
+            <label>Wi‑Fi / Broadband</label><input id="wifi" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
+            <label>Phone Bill</label><input id="phone" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
+            <label>Credit Card Repayments</label><input id="credit" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
+            <label>Groceries</label><input id="groceries" class="input" type="number" placeholder="0.00" min="0" step="0.01" />
           </div>
 
           <!-- Partner & extras -->
           <div>
-            <div class="row">
-              <label>Partner Split</label>
-              <div class="radio-row">
-                <label class="radio"><input id="partnerToggle" type="checkbox"> Add partner split</label>
-                <label class="pill"><input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal</label>
-                <label class="pill"><input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage</label>
-              </div>
-              <div id="percentRow" class="muted" style="display:none; margin-top:8px;">
-                <div class="pct-row">
-                  <span>Your share %</span>
-                  <input id="youPct" type="number" min="0" max="100" step="1" value="50" class="pct-input">
-                  <span>Partner % = <span id="partnerPctText">50</span></span>
-                </div>
+            <label>Partner Split</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <label><input id="partnerToggle" type="checkbox"> Add partner split</label>
+              <label><input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal</label>
+              <label><input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage</label>
+            </div>
+            <div id="percentRow" style="display:none;margin-top:8px;color:#cbd5e1;font-size:12px">
+              <div style="display:flex;gap:10px;align-items:center">
+                <span>Your share %</span>
+                <input id="youPct" type="number" min="0" max="100" step="1" value="50" style="width:80px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+                <span>Partner % = <span id="partnerPctText">50</span></span>
               </div>
             </div>
 
-            <div class="row">
-              <label>Extra Expenses</label>
-              <div id="extras" class="extras"></div>
-              <div class="actions">
-                <button class="btn ghost" id="addExtraBtn">+ Add extra</button>
-              </div>
-              <div class="muted">Add custom lines (e.g., travel, books, societies, gym).</div>
-            </div>
+            <label style="margin-top:12px">Extra Expenses</label>
+            <div id="extras"></div>
+            <div class="actions"><button class="btn" id="addExtraBtn">+ Add extra</button></div>
+            <div style="color:#cbd5e1;font-size:12px">Add custom lines (e.g., travel, books, societies, gym).</div>
           </div>
         </div>
 
         <!-- Bottom actions -->
-        <div class="actions center-actions">
+        <div class="actions" style="justify-content:center;margin-top:16px">
           <button class="btn" id="calcBtn">Calculate</button>
           <button class="btn secondary" id="togglePanelBtn">View Results</button>
         </div>
@@ -125,59 +102,49 @@
   </div>
 
   <!-- Floating Results -->
-  <button class="btn floating-toggle" id="fabBtn">Results</button>
-  <div class="floating-panel" id="panel">
-    <div class="panel-title">Results <span id="monthLabel" class="muted"></span></div>
-    <div class="panel-line"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
-    <div class="panel-line"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
-    <div id="partnerBreak" style="display:none; margin-top:8px;">
-      <div class="panel-line"><span>Your share</span><strong id="yourShare">£0.00</strong></div>
-      <div class="panel-line"><span>Partner share</span><strong id="partnerShare">£0.00</strong></div>
-      <div class="muted">Split: <span id="splitDesc">Equal</span></div>
+  <button class="btn" id="fabBtn" style="position:fixed;bottom:22px;right:22px;border-radius:999px">Results</button>
+  <div id="panel" style="position:fixed;bottom:90px;right:22px;max-width:360px;background:rgba(255,255,255,0.10);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.20);border-radius:16px;padding:16px;display:none">
+    <div style="font-weight:600;margin-bottom:8px">Results <span id="monthLabel" style="color:#cbd5e1;font-size:12px"></span></div>
+    <div style="display:flex;justify-content:space-between;margin:6px 0"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
+    <div style="display:flex;justify-content:space-between;margin:6px 0"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
+    <div id="partnerBreak" style="display:none;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;margin:6px 0"><span>Your share</span><strong id="yourShare">£0.00</strong></div>
+      <div style="display:flex;justify-content:space-between;margin:6px 0"><span>Partner share</span><strong id="partnerShare">£0.00</strong></div>
+      <div style="color:#cbd5e1;font-size:12px">Split: <span id="splitDesc">Equal</span></div>
     </div>
   </div>
 
   <!-- Footer credit -->
   <footer>
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="httpskedin.com/in/shounakbhattacharjee31LinkedIn</a>
-  </footer>
-
-  <script>
-    // ---------- Utilities ----------
+    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" target="_blank" rel="noopener // Utilities
     const gbp = n => "£" + (Number(n||0)).toFixed(2);
     const val = id => parseFloat(document.getElementById(id).value) || 0;
 
-    // ---------- Extras dynamic ----------
+    // Extras
     const extrasEl = document.getElementById('extras');
-    const addExtraBtn = document.getElementById('addExtraBtn');
-
     function addExtraRow(label='', amount=''){
       const row = document.createElement('div');
-      row.className = 'extra-row';
+      row.style.display = 'grid';
+      row.style.gridTemplateColumns = '1.2fr 0.8fr';
+      row.style.gap = '12px';
+      row.style.marginBottom = '8px';
       row.innerHTML = `
-        <input class="input" type="text" placeholder="Label (e.g., Travel)" value="${label}">
-        <div class="field">
-          <span class="prefix">£</span>
-          <input class="input" type="number" placeholder="0.00" min="0" step="0.01" value="${amount}">
-        </div>
-      `;
+        <input type="text" placeholder="Label (e.g., Travel)" value="${label}" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+        <input type="number" placeholder="0.00" min="0" step="0.01" value="${amount}" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">`;
       extrasEl.appendChild(row);
       attachLiveUpdate();
     }
-    // Add 3 blank boxes initially
     addExtraRow(); addExtraRow(); addExtraRow();
+    document.getElementById('addExtraBtn').addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
 
-    addExtraBtn.addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
-
-    // ---------- Partner split ----------
+    // Partner split
     const partnerToggle = document.getElementById('partnerToggle');
     const splitEqual = document.getElementById('splitEqual');
     const splitPercent = document.getElementById('splitPercent');
     const percentRow = document.getElementById('percentRow');
     const youPctInput = document.getElementById('youPct');
     const partnerPctText = document.getElementById('partnerPctText');
-
     function updatePercent(){
       let youPct = parseFloat(youPctInput.value || 0);
       youPct = Math.max(0, Math.min(100, youPct));
@@ -189,78 +156,63 @@
     splitEqual.addEventListener('change', () => percentRow.style.display = 'none');
     updatePercent();
 
-    // ---------- Floating panel ----------
+    // Floating panel
     const panel = document.getElementById('panel');
-    document.getElementById('fabBtn').addEventListener('click', () => panel.classList.toggle('visible'));
-    document.getElementById('togglePanelBtn').addEventListener('click', () => panel.classList.toggle('visible'));
+    document.getElementById('fabBtn').addEventListener('click', () => panel.style.display = (panel.style.display==='none'||panel.style.display==='') ? 'block' : 'none');
+    document.getElementById('togglePanelBtn').addEventListener('click', () => panel.style.display = (panel.style.display==='none'||panel.style.display==='') ? 'block' : 'none');
 
-    // ---------- Reset & Export ----------
+    // Reset
     document.getElementById('resetBtn').addEventListener('click', () => {
       ['rent','council','wifi','phone','credit','groceries'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('monthInput').value = '';
       partnerToggle.checked = false; splitEqual.checked = true; splitPercent.checked = false; percentRow.style.display = 'none';
       youPctInput.value = 50; updatePercent();
       extrasEl.innerHTML = ''; addExtraRow(); addExtraRow(); addExtraRow();
-      calculate(); // refresh totals
+      calculate();
     });
 
+    // Export CSV
     document.getElementById('exportBtn').addEventListener('click', () => {
       const month = document.getElementById('monthInput').value || 'Unspecified';
       const base = [
-        ['Rent', val('rent')],
-        ['Council Tax', val('council')],
-        ['Wi‑Fi', val('wifi')],
-        ['Phone Bill', val('phone')],
-        ['Credit Card', val('credit')],
-        ['Groceries', val('groceries')],
+        ['Rent', val('rent')], ['Council Tax', val('council')], ['Wi‑Fi', val('wifi')],
+        ['Phone Bill', val('phone')], ['Credit Card', val('credit')], ['Groceries', val('groceries')],
       ];
       const extras = Array.from(extrasEl.children).map(row=>{
-        const [labelInput, amountWrap] = row.children;
-        const amountInput = amountWrap.querySelector('input[type="number"]');
-        const label = labelInput.value || 'Extra';
-        const amount = parseFloat(amountInput.value||0);
+        const inputs = row.querySelectorAll('input');
+        const label = inputs[0].value || 'Extra';
+        const amount = parseFloat(inputs[1].value||0);
         return [label, amount];
       });
-
-      const monthlyTotal = sumAll(base) + sumAll(extras);
+      const monthlyTotal = [...base, ...extras].reduce((s, [,n]) => s + Number(n||0), 0);
       const yearlyTotal = monthlyTotal * 12;
 
-      let youShare = '', partnerShare = '', splitMeta = '';
+      let youShare='', partnerShare='', splitMeta='';
       if (partnerToggle.checked){
         if (splitPercent.checked){
           const youPct = parseFloat(youPctInput.value||0);
           youShare = monthlyTotal * (youPct/100);
           partnerShare = monthlyTotal - youShare;
-          splitMeta = `Percentage (${youPct}% / ${ (100-youPct).toFixed(0) }%)`;
+          splitMeta = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
         } else {
-          youShare = monthlyTotal/2;
-          partnerShare = monthlyTotal/2;
+          youShare = partnerShare = monthlyTotal/2;
           splitMeta = 'Equal (50% / 50%)';
         }
       }
 
-      let rows = [
-        ['Month', month],
-        ...base,
-        ...extras,
-        ['Monthly Total', monthlyTotal.toFixed(2)],
-        ['Yearly Total', yearlyTotal.toFixed(2)],
-      ];
+      let rows = [['Month', month], ...base, ...extras,
+                  ['Monthly Total', monthlyTotal.toFixed(2)], ['Yearly Total', yearlyTotal.toFixed(2)]];
       if (partnerToggle.checked){
         rows.push(['Split Type', splitMeta]);
         rows.push(['Your Share (Monthly)', (youShare||0).toFixed(2)]);
         rows.push(['Partner Share (Monthly)', (partnerShare||0).toFixed(2)]);
       }
-
-      const csv = 'data:text/csv;charset=utf-8,' + 
-        'Category,Amount (£)\n' + rows.map(r => r.join(',')).join('\n');
-      const a = document.createElement('a');
-      a.href = encodeURI(csv);
-      a.download = `cost_of_living_${month.replace(/-/g,'_')||'unspecified'}.csv`;
-      document.body.appendChild(a); a.click(); a.remove();
+      const csv = 'data:text/csv;charset=utf-8,' + 'Category,Amount (£)\n' + rows.map(r=>r.join(',')).join('\n');
+      const a = document.createElement('a'); a.href = encodeURI(csv);
+      a.download = `cost_of_living_${month.replace(/-/g,'_')||'unspecified'}.csv`; document.body.appendChild(a); a.click(); a.remove();
     });
 
-    // ---------- Calculation ----------
+    // Calculate
     const monthlyTotalEl = document.getElementById('monthlyTotal');
     const yearlyTotalEl  = document.getElementById('yearlyTotal');
     const monthLabelEl   = document.getElementById('monthLabel');
@@ -269,49 +221,35 @@
     const partnerBreakEl = document.getElementById('partnerBreak');
     const splitDescEl    = document.getElementById('splitDesc');
 
-    function sumAll(list){ return list.reduce((s, [_, n]) => s + Number(n||0), 0); }
-
-    function gatherExtras(){
-      return Array.from(extrasEl.children).map(row=>{
-        const [labelInput, amountWrap] = row.children;
-        const amountInput = amountWrap.querySelector('input[type="number"]');
-        return [labelInput.value || 'Extra', parseFloat(amountInput.value||0)];
-      });
-    }
-
     function calculate(){
       const base = [
-        ['Rent', val('rent')],
-        ['Council Tax', val('council')],
-        ['Wi‑Fi', val('wifi')],
-        ['Phone Bill', val('phone')],
-        ['Credit Card', val('credit')],
-        ['Groceries', val('groceries')],
+        ['Rent', val('rent')], ['Council Tax', val('council')], ['Wi‑Fi', val('wifi')],
+        ['Phone Bill', val('phone')], ['Credit Card', val('credit')], ['Groceries', val('groceries')],
       ];
-      const extras = gatherExtras();
-
+      const extras = Array.from(extrasEl.children).map(row=>{
+        const inputs = row.querySelectorAll('input');
+        return [inputs[0].value || 'Extra', parseFloat(inputs[1].value||0)];
+      });
       const month = document.getElementById('monthInput').value || '';
       monthLabelEl.textContent = month ? `• ${month}` : '';
-
-      const monthlyTotal = sumAll(base) + sumAll(extras);
+      const monthlyTotal = [...base, ...extras].reduce((s, [,n]) => s + Number(n||0), 0);
       const yearlyTotal = monthlyTotal * 12;
-      monthlyTotalEl.textContent = gbp(monthlyTotal);
-      yearlyTotalEl.textContent  = gbp(yearlyTotal);
+      monthlyTotalEl.textContent = "£" + monthlyTotal.toFixed(2);
+      yearlyTotalEl.textContent  = "£" + yearlyTotal.toFixed(2);
 
-      // Partner section
       if (partnerToggle.checked){
         partnerBreakEl.style.display = 'block';
         if (splitPercent.checked){
           const youPct = parseFloat(youPctInput.value||0);
           const yourShare = monthlyTotal * (youPct/100);
           const partnerShare = monthlyTotal - yourShare;
-          yourShareEl.textContent = gbp(yourShare);
-          partnerShareEl.textContent = gbp(partnerShare);
+          yourShareEl.textContent = "£" + yourShare.toFixed(2);
+          partnerShareEl.textContent = "£" + partnerShare.toFixed(2);
           splitDescEl.textContent = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
         } else {
           const share = monthlyTotal / 2;
-          yourShareEl.textContent = gbp(share);
-          partnerShareEl.textContent = gbp(share);
+          yourShareEl.textContent = "£" + share.toFixed(2);
+          partnerShareEl.textContent = "£" + share.toFixed(2);
           splitDescEl.textContent = 'Equal (50% / 50%)';
         }
       } else {
@@ -322,14 +260,13 @@
     document.getElementById('calcBtn').addEventListener('click', calculate);
 
     function attachLiveUpdate(){
-      const inputs = document.querySelectorAll('.input, #monthInput, #youPct, #partnerToggle, #splitEqual, #splitPercent');
+      const inputs = document.querySelectorAll('#monthInput, #youPct, #partnerToggle, #splitEqual, #splitPercent, input[type=number], input[type=text]');
       inputs.forEach(el => el.addEventListener('input', calculate));
       partnerToggle.addEventListener('change', calculate);
       splitEqual.addEventListener('change', calculate);
       splitPercent.addEventListener('change', calculate);
     }
-    attachLiveUpdate();
-    calculate(); // initial render
+    attachLiveUpdate(); calculate();
   </script>
 </body>
 </html>
