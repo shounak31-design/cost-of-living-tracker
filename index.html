@@ -3,6 +3,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>UK Monthly Budgeting Tool</title>
 </head>
@@ -245,18 +248,24 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="https://uk.linkedin.com/in/shounakbhattachnkedIn</a>
+    <a href="https://uk.linkedinhounakbhattacharjee31LinkedIn</a>
   </footer>
 
   <!-- Inline JS -->
   <script>
-    // -------- Helpers (robust & safe) --------
+    // ---------- Robust helpers ----------
     function byId(id){ return document.getElementById(id); }
     function toGBP(n){ const v = Number.isFinite(+n) ? +n : 0; return "£" + v.toFixed(2); }
-    function num(id){ const el = byId(id); const v = el ? parseFloat(el.value) : NaN; return Number.isFinite(v) ? v : 0; }
     function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+    // Read a number from element id, with an optional fallback id (for cached/old markup)
+    function safeNum(primaryId, fallbackId){
+      const el = byId(primaryId) || (fallbackId ? byId(fallbackId) : null);
+      if(!el) return 0;
+      const v = parseFloat(el.value);
+      return Number.isFinite(v) ? v : 0;
+    }
 
-    // DOM refs
+    // ---------- DOM refs ----------
     const extrasEl       = byId('extras');
     const partnerTgl     = byId('partnerToggle');
     const splitEqual     = byId('splitEqual');
@@ -291,7 +300,7 @@
     const chartCanvas    = byId('breakdownChart');
     const chartLegend    = byId('chartLegend');
 
-    // ----- Extras rows -----
+    // ---------- Extras ----------
     function addExtraRow(label='', amount=''){
       const row = document.createElement('div');
       row.style.display = 'grid';
@@ -319,11 +328,10 @@
       row.appendChild(amountInput);
       extrasEl.appendChild(row);
     }
-    // initial extras
     addExtraRow(); addExtraRow(); addExtraRow();
     byId('addExtraBtn').addEventListener('click', e => { e.preventDefault(); addExtraRow(); });
 
-    // ----- Percentage UI -----
+    // ---------- Percent UI ----------
     function updatePercent(){
       let p = parseFloat(youPctInput.value);
       if (!Number.isFinite(p)) p = 0;
@@ -335,15 +343,12 @@
     splitPercent.addEventListener('change', () => { percentRow.style.display='block'; calculate(); });
     splitEqual.addEventListener('change', () => { percentRow.style.display='none';  calculate(); });
 
-    // ----- Income recommendation -----
+    // ---------- Income recommendation ----------
     function recommendedYouPct(){
-      const youInc = parseFloat(youIncomeEl.value);
-      const partnerInc = parseFloat(partnerIncomeEl.value);
-      const a = Number.isFinite(youInc) ? Math.max(0, youInc) : 0;
-      const b = Number.isFinite(partnerInc) ? Math.max(0, partnerInc) : 0;
+      const a = Math.max(0, parseFloat(youIncomeEl.value) || 0);
+      const b = Math.max(0, parseFloat(partnerIncomeEl.value) || 0);
       const sum = a + b;
-      if (sum <= 0) return 50; // fallback
-      return clamp((a / sum) * 100, 0, 100);
+      return sum > 0 ? clamp((a/sum)*100, 0, 100) : 50;
     }
     function updateIncomeRecommendation(){
       const youPct = Math.round(recommendedYouPct());
@@ -361,63 +366,49 @@
       calculate();
     });
 
-    // ----- Gather extras -----
+    // ---------- Gather extras ----------
     function gatherExtras(){
       return Array.from(extrasEl.children).map(row=>{
         const inputs = row.querySelectorAll('input');
         const label  = (inputs[0].value || 'Extra').replace(/,/g, ' ');
         const amount = parseFloat(inputs[1].value);
-        const v = Number.isFinite(amount) ? amount : 0;
-        return [label, v];
+        return [label, Number.isFinite(amount) ? amount : 0];
       });
     }
 
-    // ----- Chart (no external libraries) -----
+    // ---------- Chart ----------
     const CHART_COLORS = ['#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf','#f472b6','#fb7185','#c084fc','#22c55e'];
     function drawBreakdownChart(items){
       if (!chartCanvas || typeof chartCanvas.getContext !== 'function'){ return; }
       const ctx = chartCanvas.getContext('2d');
       if (!ctx){ chartLegend.innerHTML = '<div style="color:#cbd5e1;">Chart unavailable</div>'; return; }
 
-      // HiDPI handling
-      const dpr = window.devicePixelRatio || 1;
-      const cssSize = 260;
+      const dpr = window.devicePixelRatio || 1, cssSize = 260;
       chartCanvas.width  = cssSize * dpr;
       chartCanvas.height = cssSize * dpr;
       chartCanvas.style.width  = cssSize + 'px';
       chartCanvas.style.height = cssSize + 'px';
       ctx.setTransform(dpr,0,0,dpr,0,0);
-
       ctx.clearRect(0,0,cssSize,cssSize);
 
       const total = items.reduce((s, it)=> s + it.value, 0);
       if (total <= 0){
-        // draw a subtle ring
-        ctx.beginPath();
-        ctx.arc(cssSize/2, cssSize/2, cssSize/2 - 6, 0, Math.PI*2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.lineWidth = 6;
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(cssSize/2, cssSize/2, cssSize/2 - 6, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 6; ctx.stroke();
         chartLegend.innerHTML = '<div style="color:#cbd5e1;">No data yet</div>';
         return;
       }
 
-      let start = -Math.PI/2;
-      const cx = cssSize/2, cy = cssSize/2, r = cssSize/2 - 6;
-
+      let start = -Math.PI/2; const cx = cssSize/2, cy = cssSize/2, r = cssSize/2 - 6;
       items.forEach((it, i) => {
         const angle = (it.value / total) * Math.PI * 2;
         const end = start + angle;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, start, end);
-        ctx.closePath();
-        ctx.fillStyle = CHART_COLORS[i % CHART_COLORS.length];
-        ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, end); ctx.closePath();
+        ctx.fillStyle = CHART_COLORS[i % CHART_COLORS.length]; ctx.fill();
         start = end;
       });
 
-      // Legend
       chartLegend.innerHTML = items.map((it, i) => `
         <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
           <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${CHART_COLORS[i % CHART_COLORS.length]};"></span>
@@ -427,33 +418,30 @@
       `).join('');
     }
 
-    // ----- Core calculation -----
+    // ---------- Core calculation ----------
     function calculate(){
-      // Priority base categories (keep this order)
+      // Priority base categories (read both new & old IDs just in case)
       const base = [
-        ['Rent',        num('rent')],
-        ['Council Tax', num('council')],
-        ['Water',       num('water')],
-        ['Electricity', num('electricity')],
-        ['Wi‑Fi',       num('wifi')],
-        ['Subscriptions', num('groceries')],
+        ['Rent',        safeNum('rent')],
+        ['Council Tax', safeNum('council')],
+        ['Water',       safeNum('water','credit')],        // new id with fallback to old
+        ['Electricity', safeNum('electricity','phone')],   // new id with fallback to old
+        ['Wi‑Fi',       safeNum('wifi')],
+        ['Subscriptions', safeNum('groceries')],
       ];
       const extras = gatherExtras();
 
       const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v || 0), 0);
       const yearly  = monthly * 12;
 
-      // Always show inline totals
       inlineMonthly.textContent = toGBP(monthly);
       inlineYearly.textContent  = toGBP(yearly);
       monthlyTotalEl.textContent = toGBP(monthly);
       yearlyTotalEl.textContent  = toGBP(yearly);
 
-      // Month label
       const m = byId('monthInput').value || '';
       monthLabelEl.textContent = m ? `• ${m}` : '';
 
-      // Partner split
       if (partnerTgl.checked){
         partnerBreakEl.style.display = 'block';
         if (splitPercent.checked){
@@ -470,12 +458,11 @@
           splitDescEl.textContent    = 'Equal (50% / 50%)';
         }
 
-        // Incomes / leftover (optional display)
+        // Income (optional)
         const yi = Math.max(0, parseFloat(youIncomeEl.value) || 0);
         const pi = Math.max(0, parseFloat(partnerIncomeEl.value) || 0);
-        const usingPct = splitPercent.checked ? clamp(parseFloat(youPctInput.value) || 0, 0, 100) : 50;
-        const ys = monthly * (usingPct/100);
-        const ps = monthly - ys;
+        const pct = splitPercent.checked ? clamp(parseFloat(youPctInput.value) || 0, 0, 100) : 50;
+        const ys = monthly * (pct/100), ps = monthly - ys;
         if (yi > 0 || pi > 0){
           incomePanel.style.display = 'block';
           yourIncomePanel.textContent = toGBP(yi);
@@ -490,25 +477,22 @@
         incomePanel.style.display = 'none';
       }
 
-      // Pie chart data (exclude zeros)
-      const items = [...base, ...extras]
-        .filter(([,v]) => Number(v) > 0)
-        .map(([label, v]) => ({ label, value: Number(v) }));
+      // Pie chart
+      const items = [...base, ...extras].filter(([,v]) => Number(v) > 0).map(([label, v]) => ({label, value:Number(v)}));
       drawBreakdownChart(items);
     }
-    // Expose for debugging if needed
-    window.calculate = calculate;
+    window.calculate = calculate; // for quick console checks
 
-    // ----- Export CSV (includes incomes & split) -----
+    // ---------- Export CSV ----------
     byId('exportBtn').addEventListener('click', () => {
       const month = byId('monthInput').value || 'Unspecified';
       const base = [
-        ['Rent',        num('rent')],
-        ['Council Tax', num('council')],
-        ['Water',       num('water')],
-        ['Electricity', num('electricity')],
-        ['Wi‑Fi',       num('wifi')],
-        ['Subscriptions', num('groceries')],
+        ['Rent',        safeNum('rent')],
+        ['Council Tax', safeNum('council')],
+        ['Water',       safeNum('water','credit')],
+        ['Electricity', safeNum('electricity','phone')],
+        ['Wi‑Fi',       safeNum('wifi')],
+        ['Subscriptions', safeNum('groceries')],
       ];
       const extras = gatherExtras();
       const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v||0), 0);
@@ -547,13 +531,16 @@
       document.body.appendChild(a); a.click(); a.remove();
     });
 
-    // ----- View/Reset & bindings -----
+    // ---------- View/Reset & bindings ----------
     function toggle(el){ el.style.display = (el.style.display==='none' || el.style.display==='') ? 'block' : 'none'; }
     byId('fabBtn').addEventListener('click', () => toggle(panel));
     byId('togglePanelBtn').addEventListener('click', () => toggle(panel));
 
     byId('resetBtn').addEventListener('click', () => {
       ['rent','council','water','electricity','wifi','groceries','youIncome','partnerIncome'].forEach(id => { const el = byId(id); if(el) el.value=''; });
+      // Also clear any legacy inputs if they exist (for cached pages)
+      ['credit','phone'].forEach(id => { const el = byId(id); if(el) el.value=''; });
+
       byId('monthInput').value = '';
       partnerTgl.checked = false;
       splitEqual.checked = true;
@@ -565,9 +552,10 @@
       calculate();
     });
 
-    // Auto-calc on input + click (safe bindings)
+    // Bind inputs (to both new and legacy ids)
     [
       'monthInput','rent','council','water','electricity','wifi','groceries',
+      'credit','phone', // legacy fallbacks if present
       'partnerToggle','splitEqual','splitPercent'
     ].forEach(id => { const el = byId(id); if (el) el.addEventListener('input', calculate); });
     partnerTgl.addEventListener('change', calculate);
@@ -575,7 +563,7 @@
     splitPercent.addEventListener('change', calculate);
     byId('calcBtn').addEventListener('click', calculate);
 
-    // Initial render (guarantee visible results)
+    // Initial render
     updatePercent();
     updateIncomeRecommendation();
     calculate();
