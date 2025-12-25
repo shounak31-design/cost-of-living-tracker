@@ -16,11 +16,11 @@ body {
 
 /* Center wrapper */
 .center { display:flex; align-items:center; justify-content:center; padding:48px 16px; }
-.wrap { width:100%; max-width:900px; }
+.wrap   { width:100%; max-width:900px; }
 
 /* Titles */
-.title{ margin:0 0 8px 0; font-weight:600; text-align:center; }
-.subtitle{ text-align:center; color:#cbd5e1; font-size:14px; margin:0 0 18px 0; }
+.title    { margin:0 0 8px 0; font-weight:600; text-align:center; }
+.subtitle { text-align:center; color:#cbd5e1; font-size:14px; margin:0 0 18px 0; }
 
 /* Card */
 .card{
