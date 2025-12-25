@@ -64,10 +64,11 @@
 
         <!-- Layout grid: 3 columns -->
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
-          <!-- Core Monthly Bills -->
+          <!-- Core Monthly Bills (Shared) -->
           <div>
             <h3 style="margin:0 0 10px 0;">Core Monthly Bills</h3>
-            <!-- Each input styled inline for reliability -->
+
+            <!-- Utility to render a £ input (duplicated inline styles for reliability) -->
             <div style="margin-bottom:12px;">
               <label style="display:block;margin-bottom:8px;">Rent</label>
               <div style="position:relative;">
@@ -130,36 +131,9 @@
                   style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
               </div>
             </div>
-
-            <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">Credit Card Repayments</label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="credit" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"
-                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
-              </div>
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">Groceries</label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="groceries" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"
-                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
-              </div>
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <label style="display:block;margin-bottom:8px;">Transport (Oyster/Travel)</label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
-                <input id="transport" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"
-                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
-              </div>
-            </div>
           </div>
 
-          <!-- Subscriptions -->
+          <!-- Subscriptions (Shared) -->
           <div>
             <h3 style="margin:0 0 10px 0;">Subscriptions</h3>
 
@@ -206,6 +180,7 @@
           <div>
             <h3 style="margin:0 0 10px 0;">Couple Household & Income</h3>
 
+            <!-- Shared household in this section -->
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
               <label>Household Supplies</label>
               <input id="hhSuppliesAmt" type="number" step="0.01" min="0" value="0"
@@ -215,6 +190,33 @@
               <label>Contents Insurance</label>
               <input id="hhInsuranceAmt" type="number" step="0.01" min="0" value="0"
                      style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <label>Groceries</label>
+              <input id="groceries" type="number" step="0.01" min="0" value="0"
+                     style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+              <label>Transport (Oyster/Travel)</label>
+              <input id="transport" type="number" step="0.01" min="0" value="0"
+                     style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;">
+            </div>
+
+            <!-- Per-person CC repayments for savings -->
+            <div style="margin-top:6px;color:#cbd5e1;font-size:12px;">Per‑person monthly credit card repayments</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+              <div style="position:relative;">
+                <label style="display:block;margin-bottom:6px;">Your credit card</label>
+                <span style="position:absolute;left:10px;top:46px;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="ccYou" type="number" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
+              </div>
+              <div style="position:relative;">
+                <label style="display:block;margin-bottom:6px;">Partner credit card</label>
+                <span style="position:absolute;left:10px;top:46px;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="ccPartner" type="number" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
+              </div>
             </div>
 
             <!-- Salaries -->
@@ -263,7 +265,7 @@
               + Add extra
             </button>
           </div>
-          <div style="color:#cbd5e1;font-size:12px;margin-top:6px;">Add custom lines (e.g., travel, books, societies, gym).</div>
+          <div style="color:#cbd5e1;font-size:12px;margin-top:6px;">Add custom lines (e.g., books, societies, gifts).</div>
         </div>
 
         <!-- Bottom actions -->
@@ -303,7 +305,7 @@
             <div id="pieLegend" style="font-size:14px;color:#e5e7eb;"></div>
           </div>
           <div style="color:#cbd5e1;font-size:12px;margin-top:6px;">
-            Pie chart shows categories with non‑zero amounts (core bills, subscriptions, household, and extras).
+            Chart shows category shares: Core Bills, Subscriptions, Couple Household, Your CC, Partner CC, Extras.
           </div>
         </div>
       </div>
@@ -336,7 +338,10 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" target="_blank"  <!-- Inline JS -->
+    <ttps://uk.linkedin.com/in/shounakbhattacharjee31LinkedIn</a>
+  </footer>
+
+  <!-- Inline JS -->
   <script>
     // Helpers
     function byId(id){ return document.getElementById(id); }
@@ -392,7 +397,7 @@
 
       const labelInput = document.createElement('input');
       labelInput.type = 'text';
-      labelInput.placeholder = 'Label (e.g., Travel)';
+      labelInput.placeholder = 'Label (e.g., Gifts)';
       labelInput.value = label;
       labelInput.style.cssText = 'width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.10);color:#fff;';
       labelInput.addEventListener('input', calculate);
@@ -446,15 +451,6 @@
     splitEqual.addEventListener('change', () => { percentRow.style.display='none';  calculate(); });
 
     // Gatherers
-    function gatherExtras(){
-      return Array.from(extrasEl.children).map(row=>{
-        const inputs = row.querySelectorAll('input');
-        const label  = inputs[0].value || 'Extra';
-        const amount = parseFloat(inputs[1].value || 0);
-        return [label, amount];
-      });
-    }
-
     function gatherSubscriptions(){
       const list = [];
       const subsCb = [
@@ -475,10 +471,17 @@
       }));
       return list;
     }
+    function gatherExtras(){
+      return Array.from(extrasEl.children).map(row=>{
+        const inputs = row.querySelectorAll('input');
+        return [inputs[0].value || 'Extra', parseFloat(inputs[1].value || 0)];
+      });
+    }
 
     // Calculation
     function calculate(){
-      const base = [
+      // Shared categories
+      const coreBills = [
         ['Rent', num('rent')],
         ['Council Tax', num('council')],
         ['Electricity', num('electricity')],
@@ -486,87 +489,112 @@
         ['Water', num('water')],
         ['Wi‑Fi', num('wifi')],
         ['Phone Bill', num('phone')],
-        ['Credit Card Repayments', num('credit')],
-        ['Groceries', num('groceries')],
-        ['Transport', num('transport')],
       ];
-      const subs   = gatherSubscriptions();
+      const subs   = gatherSubscriptions(); // array of [label, amount]
       const extras = gatherExtras();
 
-      const hhSupplies = parseFloat(byId('hhSuppliesAmt').value || 0);
-      const hhIns      = parseFloat(byId('hhInsuranceAmt').value || 0);
-
-      const categories = [
-        ...base,
-        ['Subscriptions', subs.reduce((s,[,v]) => s + Number(v||0), 0)],
-        ['Household Supplies', hhSupplies],
-        ['Contents Insurance', hhIns],
-        ...extras, // extras shown individually in chart/CSV
+      const coupleHousehold = [
+        ['Household Supplies', parseFloat(byId('hhSuppliesAmt').value || 0)],
+        ['Contents Insurance', parseFloat(byId('hhInsuranceAmt').value || 0)],
+        ['Groceries', parseFloat(byId('groceries').value || 0)],
+        ['Transport', parseFloat(byId('transport').value || 0)],
       ];
 
-      const monthly = categories.reduce((s, [,v]) => s + Number(v || 0), 0);
-      const yearly  = monthly * 12;
+      const sum = arr => arr.reduce((s, [,v]) => s + Number(v||0), 0);
 
-      const youInc  = num('salaryYou');
-      const prtInc  = num('salaryPartner');
-      const combinedInc = youInc + prtInc;
-      const combinedSav = combinedInc - monthly;
+      const coreTotal  = sum(coreBills);
+      const subsTotal  = sum(subs);
+      const houseTotal = sum(coupleHousehold);
+      const extrasTotal= sum(extras);
 
-      // Inline
-      inlineMonthly.textContent  = toGBP(monthly);
-      inlineYearly.textContent   = toGBP(yearly);
-      inlineIncome.textContent   = toGBP(combinedInc);
-      inlineSavings.textContent  = toGBP(combinedSav);
+      const sharedMonthly = coreTotal + subsTotal + houseTotal + extrasTotal;
 
-      // Panel
-      monthlyTotalEl.textContent   = toGBP(monthly);
-      yearlyTotalEl.textContent    = toGBP(yearly);
-      combinedIncomeEl.textContent = toGBP(combinedInc);
-      combinedSavingsEl.textContent= toGBP(combinedSav);
+      // Per-person individual expenses
+      const ccYou     = parseFloat(byId('ccYou').value || 0);
+      const ccPartner = parseFloat(byId('ccPartner').value || 0);
+
+      const youIncome     = num('salaryYou');
+      const partnerIncome = num('salaryPartner');
+      const combinedIncome= youIncome + partnerIncome;
+
+      // Split shared
+      let yourShare, partnerShare, splitLabel;
+      if (partnerTgl.checked){
+        if (splitPercent.checked){
+          const youPct = parseFloat(youPctInput.value || 0);
+          yourShare    = sharedMonthly * (youPct/100);
+          partnerShare = sharedMonthly - yourShare;
+          splitLabel   = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
+        } else {
+          yourShare = partnerShare = sharedMonthly / 2;
+          splitLabel = 'Equal (50% / 50%)';
+        }
+      } else {
+        // Not splitting; per‑person figures hidden, but we compute combined savings
+        yourShare = partnerShare = 0;
+        splitLabel = 'Not applied';
+      }
+
+      // Savings
+      const yourTotalOut     = yourShare + ccYou;
+      const partnerTotalOut  = partnerShare + ccPartner;
+
+      const yourSavings      = youIncome - yourTotalOut;
+      const partnerSavings   = partnerIncome - partnerTotalOut;
+      const combinedSavings  = combinedIncome - (sharedMonthly + ccYou + ccPartner);
+
+      const monthlyTotal = sharedMonthly + ccYou + ccPartner;
+      const yearlyTotal  = monthlyTotal * 12;
+
+      // Inline display
+      inlineMonthly.textContent = toGBP(monthlyTotal);
+      inlineYearly.textContent  = toGBP(yearlyTotal);
+      inlineIncome.textContent  = toGBP(combinedIncome);
+      inlineSavings.textContent = toGBP(combinedSavings);
+
+      // Panel display
+      monthlyTotalEl.textContent   = toGBP(monthlyTotal);
+      yearlyTotalEl.textContent    = toGBP(yearlyTotal);
+      combinedIncomeEl.textContent = toGBP(combinedIncome);
+      combinedSavingsEl.textContent= toGBP(combinedSavings);
 
       const m = byId('monthInput').value || '';
       monthLabelEl.textContent = m ? `• ${m}` : '';
 
-      // Split
       if (partnerTgl.checked){
         partnerBreakEl.style.display = 'block';
         inlineSplit.style.display    = 'block';
-        let yourShare, partnerShare, desc;
-        if (splitPercent.checked){
-          const youPct = parseFloat(youPctInput.value || 0);
-          yourShare    = monthly * (youPct/100);
-          partnerShare = monthly - yourShare;
-          desc = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
-        } else {
-          yourShare = partnerShare = monthly / 2;
-          desc = 'Equal (50% / 50%)';
-        }
-        const yourSav    = youInc - yourShare;
-        const partnerSav = prtInc - partnerShare;
-
-        yourShareEl.textContent    = toGBP(yourShare);
-        partnerShareEl.textContent = toGBP(partnerShare);
-        splitDescEl.textContent    = desc;
-
-        inlineYourSav.textContent  = toGBP(yourSav);
-        inlinePartSav.textContent  = toGBP(partnerSav);
-        panelYourSav.textContent   = toGBP(yourSav);
-        panelPartSav.textContent   = toGBP(partnerSav);
+        yourShareEl.textContent      = toGBP(yourShare);
+        partnerShareEl.textContent   = toGBP(partnerShare);
+        panelYourSav.textContent     = toGBP(yourSavings);
+        panelPartSav.textContent     = toGBP(partnerSavings);
+        inlineYourSav.textContent    = toGBP(yourSavings);
+        inlinePartSav.textContent    = toGBP(partnerSavings);
+        splitDescEl.textContent      = splitLabel;
       } else {
         partnerBreakEl.style.display = 'none';
         inlineSplit.style.display    = 'none';
       }
 
-      // Chart
-      renderPie(categories.filter(([,v]) => Number(v||0) > 0));
+      // Chart (aggregated categories)
+      const chartItems = [
+        ['Core Bills', coreTotal],
+        ['Subscriptions', subsTotal],
+        ['Couple Household', houseTotal],
+        ['Your CC', ccYou],
+        ['Partner CC', ccPartner],
+        ['Extras', extrasTotal],
+      ].filter(([,v]) => Number(v||0) > 0);
+      renderPie(chartItems);
     }
 
-    // Pie chart renderer (no external libraries)
+    // Pie chart renderer
+    const ctx = pieCanvas.getContext('2d');
     function renderPie(items){
       const total = items.reduce((s, [,v]) => s + Number(v||0), 0);
       ctx.clearRect(0,0,pieCanvas.width,pieCanvas.height);
 
-      // Background circle
+      // Background
       ctx.beginPath();
       ctx.arc(170,170,160,0,Math.PI*2);
       ctx.fillStyle = 'rgba(255,255,255,0.06)';
@@ -580,20 +608,15 @@
         return;
       }
 
-      // palette
-      const colors = [
-        '#60a5fa','#34d399','#fbbf24','#ef4444','#a78bfa','#22d3ee',
-        '#fb7185','#7dd3fc','#f59e0b','#10b981','#eab308','#54c2f7',
-        '#f472b6','#84cc16','#f97316','#8b5cf6','#06b6d4','#dc2626'
-      ];
+      const colors = ['#60a5fa','#34d399','#fbbf24','#ef4444','#a78bfa','#22d3ee',
+                      '#fb7185','#7dd3fc','#f59e0b','#10b981','#eab308','#54c2f7'];
 
-      let start = -Math.PI/2; // start at top
+      let start = -Math.PI/2;
       pieLegend.innerHTML = '';
       items.forEach(([label,val], i)=>{
         const angle = (val/total) * Math.PI*2;
         const end   = start + angle;
 
-        // slice
         ctx.beginPath();
         ctx.moveTo(170,170);
         ctx.arc(170,170,160,start,end);
@@ -601,7 +624,6 @@
         ctx.fillStyle = colors[i % colors.length];
         ctx.fill();
 
-        // legend item
         const sw = `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${colors[i % colors.length]};margin-right:8px;"></span>`;
         pieLegend.insertAdjacentHTML('beforeend', `<div style="margin:4px 0;">${sw}${label}: <strong>${toGBP(val)}</strong></div>`);
 
@@ -616,11 +638,14 @@
 
     byId('resetBtn').addEventListener('click', () => {
       [
-        'rent','council','electricity','gas','water','wifi','phone','credit','groceries','transport',
-        'salaryYou','salaryPartner','subNetflix','subDisney','subPrime','subSpotify'
-      ].forEach(id => { if (byId(id).type==='checkbox') byId(id).checked = false; else byId(id).value=''; });
+        'rent','council','electricity','gas','water','wifi','phone',
+        'groceries','transport','hhSuppliesAmt','hhInsuranceAmt',
+        'ccYou','ccPartner','salaryYou','salaryPartner'
+      ].forEach(id => { byId(id).value=''; });
 
-      ['subNetflixAmt','subDisneyAmt','subPrimeAmt','subSpotifyAmt','hhSuppliesAmt','hhInsuranceAmt']
+      // Uncheck subs, reset default amounts
+      ['subNetflix','subDisney','subPrime','subSpotify'].forEach(id => byId(id).checked=false);
+      ['subNetflixAmt','subDisneyAmt','subPrimeAmt','subSpotifyAmt']
         .forEach(id => byId(id).value = '0');
 
       byId('monthInput').value = '';
@@ -636,8 +661,9 @@
 
     // Live update wiring
     [
-      'monthInput','rent','council','electricity','gas','water','wifi','phone','credit','groceries','transport',
-      'salaryYou','salaryPartner','hhSuppliesAmt','hhInsuranceAmt',
+      'monthInput','rent','council','electricity','gas','water','wifi','phone',
+      'groceries','transport','hhSuppliesAmt','hhInsuranceAmt',
+      'ccYou','ccPartner','salaryYou','salaryPartner',
       'partnerToggle','splitEqual','splitPercent',
       'subNetflix','subDisney','subPrime','subSpotify',
       'subNetflixAmt','subDisneyAmt','subPrimeAmt','subSpotifyAmt'
@@ -646,9 +672,132 @@
     splitEqual.addEventListener('change', calculate);
     splitPercent.addEventListener('change', calculate);
 
+    // Percent helpers
+    function updatePercent(){
+      let p = parseFloat(youPctInput.value || 0);
+      if (p < 0) p = 0;
+      if (p > 100) p = 100;
+      youPctInput.value = p;
+      partnerPctText.textContent = (100 - p).toFixed(0);
+    }
+
     // Initial render
     function init(){ updatePercent(); calculate(); }
     init();
+
+    // Export CSV
+    byId('exportBtn').addEventListener('click', () => {
+      const month = byId('monthInput').value || 'Unspecified';
+
+      const rows = [];
+
+      // Inputs summary
+      rows.push(['Month', month]);
+
+      rows.push(['Rent', num('rent')]);
+      rows.push(['Council Tax', num('council')]);
+      rows.push(['Electricity', num('electricity')]);
+      rows.push(['Gas', num('gas')]);
+      rows.push(['Water', num('water')]);
+      rows.push(['Wi‑Fi', num('wifi')]);
+      rows.push(['Phone Bill', num('phone')]);
+
+      // Subs (checked + custom summed in chart, but export individually if checked)
+      if (byId('subNetflix').checked) rows.push(['Netflix', parseFloat(byId('subNetflixAmt').value||0)]);
+      if (byId('subDisney').checked)  rows.push(['Disney+', parseFloat(byId('subDisneyAmt').value||0)]);
+      if (byId('subPrime').checked)   rows.push(['Amazon Prime', parseFloat(byId('subPrimeAmt').value||0)]);
+      if (byId('subSpotify').checked)  rows.push(['Spotify', parseFloat(byId('subSpotifyAmt').value||0)]);
+      Array.from(subsCustomEl.children).forEach(row=>{
+        const inputs = row.querySelectorAll('input');
+        rows.push([inputs[0].value || 'Subscription', parseFloat(inputs[1].value||0)]);
+      });
+
+      // Couple household
+      rows.push(['Household Supplies', parseFloat(byId('hhSuppliesAmt').value || 0)]);
+      rows.push(['Contents Insurance', parseFloat(byId('hhInsuranceAmt').value || 0)]);
+      rows.push(['Groceries', parseFloat(byId('groceries').value || 0)]);
+      rows.push(['Transport', parseFloat(byId('transport').value || 0)]);
+
+      // Extras
+      Array.from(extrasEl.children).forEach(row=>{
+        const inputs = row.querySelectorAll('input');
+        rows.push([inputs[0].value || 'Extra', parseFloat(inputs[1].value || 0)]);
+      });
+
+      // Salaries + individual CC
+      const youInc  = num('salaryYou');
+      const prtInc  = num('salaryPartner');
+      rows.push(['Your Salary', youInc.toFixed(2)]);
+      rows.push(['Partner Salary', prtInc.toFixed(2)]);
+      rows.push(['Your Credit Card', (parseFloat(byId('ccYou').value||0)).toFixed(2)]);
+      rows.push(['Partner Credit Card', (parseFloat(byId('ccPartner').value||0)).toFixed(2)]);
+
+      // Recompute totals for export
+      const valOnly = a => a.reduce((s,[,v]) => s + Number(v||0), 0);
+      const coreT  = valOnly([
+        ['Rent', num('rent')],['Council Tax', num('council')],['Electricity', num('electricity')],
+        ['Gas', num('gas')],['Water', num('water')],['Wi‑Fi', num('wifi')],['Phone Bill', num('phone')],
+      ]);
+      let subsT = 0;
+      if (byId('subNetflix').checked) subsT += parseFloat(byId('subNetflixAmt').value||0);
+      if (byId('subDisney').checked)  subsT += parseFloat(byId('subDisneyAmt').value||0);
+      if (byId('subPrime').checked)   subsT += parseFloat(byId('subPrimeAmt').value||0);
+      if (byId('subSpotify').checked) subsT += parseFloat(byId('subSpotifyAmt').value||0);
+      Array.from(subsCustomEl.children).forEach(row=>{
+        subsT += parseFloat(row.querySelectorAll('input')[1].value||0);
+      });
+
+      const houseT = parseFloat(byId('hhSuppliesAmt').value||0) + parseFloat(byId('hhInsuranceAmt').value||0)
+                   + parseFloat(byId('groceries').value||0) + parseFloat(byId('transport').value||0);
+
+      let extrasT = 0;
+      Array.from(extrasEl.children).forEach(row=>{
+        extrasT += parseFloat(row.querySelectorAll('input')[1].value||0);
+      });
+
+      const ccYou     = parseFloat(byId('ccYou').value||0);
+      const ccPartner = parseFloat(byId('ccPartner').value||0);
+
+      const sharedMonthly = coreT + subsT + houseT + extrasT;
+      const monthlyTotal  = sharedMonthly + ccYou + ccPartner;
+      const yearlyTotal   = monthlyTotal * 12;
+      const combinedInc   = youInc + prtInc;
+      const combinedSav   = combinedInc - monthlyTotal;
+
+      rows.push(['Monthly Total', monthlyTotal.toFixed(2)]);
+      rows.push(['Yearly Total', yearlyTotal.toFixed(2)]);
+      rows.push(['Combined Salary', combinedInc.toFixed(2)]);
+      rows.push(['Estimated Monthly Savings (Combined)', combinedSav.toFixed(2)]);
+
+      if (partnerTgl.checked){
+        let yourShare, partnerShare, desc;
+        if (splitPercent.checked){
+          const youPct = parseFloat(youPctInput.value || 0);
+          yourShare    = sharedMonthly * (youPct/100);
+          partnerShare = sharedMonthly - yourShare;
+          desc = `Percentage (${youPct}% / ${(100-youPct).toFixed(0)}%)`;
+        } else {
+          yourShare = partnerShare = sharedMonthly/2;
+          desc = 'Equal (50% / 50%)';
+        }
+        const yourSav = youInc - (yourShare + ccYou);
+        const prtSav  = prtInc - (partnerShare + ccPartner);
+
+        rows.push(['Split Type', desc]);
+        rows.push(['Your Share (Shared Expenses)', yourShare.toFixed(2)]);
+        rows.push(['Partner Share (Shared Expenses)', partnerShare.toFixed(2)]);
+        rows.push(['Your Total Out (Share + Your CC)', (yourShare + ccYou).toFixed(2)]);
+        rows.push(['Partner Total Out (Share + Partner CC)', (partnerShare + ccPartner).toFixed(2)]);
+        rows.push(['Your Savings (Monthly)', yourSav.toFixed(2)]);
+        rows.push(['Partner Savings (Monthly)', prtSav.toFixed(2)]);
+      }
+
+      const csv = 'data:text/csv;charset=utf-8,' + 'Category,Amount (£)\n' + rows.map(r => r.join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = `budgeting_monthly_${(byId('monthInput').value||'unspecified').replace(/-/g,'_')}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
   </script>
 </body>
 </html>
