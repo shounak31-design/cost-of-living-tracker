@@ -1,851 +1,864 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Monthly Expenses Tracker</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Monthly Expenses Tracker</title>
 
-  <!-- Updates requested:
-    1) Buttons green instead of blue
-    2) Water is now Priority
-    3) Subscriptions split into Netflix / Amazon Prime / Spotify / Other
-    4) Auto-updating pie chart that shows YOUR vs PARTNER split (based on chosen mode)
-  -->
-  <style>
-    :root{
-      --glass-bg: rgba(255,255,255,0.08);
-      --glass-border: rgba(255,255,255,0.18);
-      --input-bg: rgba(255,255,255,0.10);
-      --input-border: rgba(255,255,255,0.22);
-      --muted: #cbd5e1;
+<style>
+:root{
+--glass-bg: rgba(255,255,255,0.08);
+--glass-border: rgba(255,255,255,0.18);
+--input-bg: rgba(255,255,255,0.10);
+--muted: #cbd5e1;
 
-      /* GREEN ACCENT */
-      --accent: #22c55e;         /* green */
-      --accent-dark: #062012;    /* deep green-ish for text on accent */
-    }
+/* GREEN ACCENT */
+--accent: #22c55e;
+--accent-dark: #062012;
+}
 
-    input[type="number"],
-    input[type="text"],
-    input[type="month"]{
-      background: var(--input-bg) !important;
-      border: 1px solid var(--glass-border) !important;
-      color: #fff !important;
-      outline: none !important;
-      -webkit-text-fill-color: #fff;
-      caret-color: #fff;
-    }
-    input::placeholder{ color: rgba(203,213,225,0.75); }
-    input:focus{
-      border-color: rgba(134,239,172,0.9) !important; /* green focus */
-      box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
-    }
-
-    /* Pie chart labels */
-    .tiny-muted { color:#cbd5e1; font-size:12px; }
-  </style>
+input[type="number"],
+input[type="text"],
+input[type="month"]{
+background: var(--input-bg) !important;
+border: 1px solid var(--glass-border) !important;
+color: #fff !important;
+outline: none !important;
+-webkit-text-fill-color: #fff;
+caret-color: #fff;
+}
+input::placeholder{ color: rgba(203,213,225,0.75); }
+input:focus{
+border-color: rgba(134,239,172,0.9) !important;
+box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
+}
+.tiny-muted { color:#cbd5e1; font-size:12px; }
+</style>
 </head>
 
 <body style="
-  margin:0; min-height:100vh; display:grid; grid-template-rows:1fr auto;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color:#ffffff;
-  background: linear-gradient(180deg, rgba(8,17,28,0.80), rgba(8,17,28,0.85)),
-    url('https://images.unsplash.com/photo-1543512218-d4d483b70f37?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
+margin:0; min-height:100vh; display:grid; grid-template-rows:1fr auto;
+font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+color:#ffffff;
+background: linear-gradient(180deg, rgba(8,17,28,0.80), rgba(8,17,28,0.85)),
+url('https://images.unsplash.com/photo-1543512218-d4d483b70f37?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
 ">
 
-  <div style="display:flex;align-items:center;justify-content:center;padding:56px 16px;">
-    <div style="width:100%;max-width:1100px;">
-      <h1 style="margin:0 0 8px 0;font-weight:700;text-align:center;">Monthly Expenses Tracker</h1>
-      <p style="text-align:center;color:#cbd5e1;font-size:14px;margin:0 0 22px 0;">
-        Auto-calculates live as you type.
-      </p>
-
-      <div style="
-        background:rgba(255,255,255,0.08);
-        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-        border-radius:22px; padding:30px;
-        border:1px solid rgba(255,255,255,0.18);
-        box-shadow:0 10px 30px rgba(0,0,0,0.35);
-      ">
-
-        <!-- Top bar -->
-        <div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px;">
-          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-            <label style="display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);">
-              <span>Month</span>
-              <input id="monthInput" type="month" style="padding:10px 12px;border-radius:10px;">
-            </label>
-            <span style="color:#cbd5e1;font-size:12px;">Calculations update instantly</span>
-          </div>
-
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button id="resetBtn" style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.16);color:#fff;cursor:pointer;">
-              Reset
-            </button>
-            <button id="exportBtn" style="padding:12px 14px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
-              Export CSV
-            </button>
-          </div>
-        </div>
-
-        <!-- Two-column grid -->
-        <div style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:26px;">
-
-          <!-- Expenses -->
-          <div>
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Rent <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
-                <input id="rent" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
-              </div>
-            </div>
-
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Council Tax <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
-                <input id="council" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
-              </div>
-            </div>
-
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Wi-Fi / Broadband <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
-                <input id="wifi" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
-              </div>
-            </div>
-
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Electricity <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
-                <input id="electricity" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
-              </div>
-            </div>
-
-            <!-- Water is now PRIORITY -->
-            <div style="margin-bottom:18px;">
-              <label style="display:block;margin-bottom:10px;">Water <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
-              <div style="position:relative;">
-                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
-                <input id="water" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                  style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
-              </div>
-            </div>
-
-            <!-- Subscriptions (split into fields) -->
-            <div style="
-              margin-top:6px;
-              padding:14px;
-              border-radius:16px;
-              border:1px solid rgba(255,255,255,0.16);
-              background:rgba(255,255,255,0.06);
-            ">
-              <div style="font-weight:700;margin-bottom:10px;">Subscriptions</div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div style="position:relative;">
-                  <div class="tiny-muted" style="margin-bottom:8px;">Netflix</div>
-                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                  <input id="subNetflix" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                </div>
-
-                <div style="position:relative;">
-                  <div class="tiny-muted" style="margin-bottom:8px;">Amazon Prime</div>
-                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                  <input id="subPrime" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                </div>
-
-                <div style="position:relative;">
-                  <div class="tiny-muted" style="margin-bottom:8px;">Spotify</div>
-                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                  <input id="subSpotify" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                </div>
-
-                <div style="position:relative;">
-                  <div class="tiny-muted" style="margin-bottom:8px;">Other subscriptions</div>
-                  <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                  <input id="subOther" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                    style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                </div>
-              </div>
-
-              <div class="tiny-muted" style="margin-top:10px;">
-                Subscriptions total: <strong id="subsTotalText">£0.00</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- Partner, Pie chart & Extras -->
-          <div>
-            <div style="margin-bottom:16px;">
-              <label style="display:block;margin-bottom:10px;">Partner Split</label>
-
-              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-                <label style="display:flex;gap:8px;align-items:center;">
-                  <input id="partnerToggle" type="checkbox">
-                  Add partner + incomes
-                </label>
-
-                <label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
-                  <input type="radio" name="splitType" id="splitIncomeAll" value="income_all" checked>
-                  By income (all)
-                </label>
-
-                <label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
-                  <input type="radio" name="splitType" id="splitIncomePriority" value="income_priority">
-                  Income priority + 50/50 rest
-                </label>
-
-                <label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
-                  <input type="radio" name="splitType" id="splitEqual" value="equal">
-                  Equal
-                </label>
-
-                <label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
-                  <input type="radio" name="splitType" id="splitPercent" value="percent">
-                  Percentage
-                </label>
-              </div>
-
-              <div id="incomeRow" style="display:none;margin-top:12px;">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                  <div style="position:relative;">
-                    <div style="color:#cbd5e1;font-size:12px;margin-bottom:8px;">Your monthly income</div>
-                    <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                    <input id="youIncome" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                      style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                  </div>
-
-                  <div style="position:relative;">
-                    <div style="color:#cbd5e1;font-size:12px;margin-bottom:8px;">Partner monthly income</div>
-                    <span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
-                    <input id="partnerIncome" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
-                      style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
-                  </div>
-                </div>
-
-                <div style="margin-top:10px;color:#cbd5e1;font-size:12px;">
-                  Income priority + 50/50 rest = Priority split by income, everything else 50/50.
-                </div>
-              </div>
-
-              <div id="percentRow" style="display:none;margin-top:12px;color:#cbd5e1;font-size:12px;">
-                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                  <span>Your share %</span>
-                  <input id="youPct" type="number" min="0" max="100" step="1" value="50"
-                    style="width:110px;padding:12px;border-radius:12px;">
-                  <span>Partner % = <span id="partnerPctText">50</span></span>
-                </div>
-              </div>
-
-              <div id="warnBox" style="display:none;margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.12);color:#fee2e2;font-size:12px;">
-                Please enter both incomes (or switch split type). Calculations are live, but income-based splits need incomes.
-              </div>
-            </div>
-
-            <!-- Auto-updating pie chart (Your vs Partner split) -->
-            <div style="
-              margin-bottom:16px;
-              padding:14px;
-              border-radius:16px;
-              border:1px solid rgba(255,255,255,0.16);
-              background:rgba(255,255,255,0.06);
-            ">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-                <div>
-                  <div style="font-weight:700;">Split Pie Chart (All Bills)</div>
-                  <div class="tiny-muted">Updates instantly based on split type</div>
-                </div>
-                <button id="toggleChartModeBtn" style="padding:10px 12px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
-                  Show Priority
-                </button>
-              </div>
-
-              <div style="display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center;margin-top:12px;">
-                <!-- SVG pie -->
-                <svg id="pieSvg" width="140" height="140" viewBox="0 0 140 140" style="display:block;">
-                  <!-- background ring -->
-                  <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="18"></circle>
-
-                  <!-- Your slice -->
-                  <circle id="pieYou"
-                          cx="70" cy="70" r="52" fill="none"
-                          stroke="var(--accent)" stroke-width="18"
-                          stroke-linecap="butt"
-                          transform="rotate(-90 70 70)"
-                          stroke-dasharray="0 999"></circle>
-
-                  <!-- Partner slice -->
-                  <circle id="piePartner"
-                          cx="70" cy="70" r="52" fill="none"
-                          stroke="rgba(147,197,253,0.95)" stroke-width="18"
-                          stroke-linecap="butt"
-                          transform="rotate(-90 70 70)"
-                          stroke-dasharray="0 999"></circle>
-
-                  <!-- center text -->
-                  <text id="pieCenterText" x="70" y="74" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="700">100%</text>
-                  <text id="pieCenterSub" x="70" y="92" text-anchor="middle" font-size="10" fill="#cbd5e1">All bills</text>
-                </svg>
-
-                <!-- legend -->
-                <div>
-                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="width:10px;height:10px;border-radius:999px;background:var(--accent);display:inline-block;"></span>
-                    <div>
-                      <div style="font-weight:700;">You</div>
-                      <div class="tiny-muted"><span id="chartYouPct">0%</span> • <span id="chartYouAmt">£0.00</span></div>
-                    </div>
-                  </div>
-
-                  <div style="display:flex;align-items:center;gap:10px;">
-                    <span style="width:10px;height:10px;border-radius:999px;background:rgba(147,197,253,0.95);display:inline-block;"></span>
-                    <div>
-                      <div style="font-weight:700;">Partner</div>
-                      <div class="tiny-muted"><span id="chartPartnerPct">0%</span> • <span id="chartPartnerAmt">£0.00</span></div>
-                    </div>
-                  </div>
-
-                  <div class="tiny-muted" style="margin-top:10px;">
-                    Chart currently showing: <strong id="chartModeLabel">All bills</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Extras -->
-            <div style="margin-bottom:10px;">
-              <label style="display:block;margin-bottom:10px;">Extra Expenses</label>
-              <div id="extras"></div>
-
-              <div style="display:flex;gap:10px;margin-top:10px;">
-                <button id="addExtraBtn" style="padding:12px 14px;border-radius:12px;border:1px dashed rgba(255,255,255,0.30);background:transparent;color:#fff;cursor:pointer;">
-                  + Add extra
-                </button>
-              </div>
-
-              <div style="color:#cbd5e1;font-size:12px;margin-top:8px;">Add custom lines (e.g., travel, books, gym).</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Inline results summary (live) -->
-        <div id="inlineResults" style="margin-top:18px;text-align:center;color:#e5e7eb;">
-          <div>Priority bills (Rent + Electricity + Council Tax + Wi-Fi + Water): <strong id="inlinePriority">£0.00</strong></div>
-          <div style="margin-top:8px;">Monthly total: <strong id="inlineMonthly">£0.00</strong></div>
-          <div>Yearly total: <strong id="inlineYearly">£0.00</strong></div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating Results -->
-  <button id="fabBtn" style="position:fixed;bottom:22px;right:22px;padding:12px 14px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
-    Results
-  </button>
-
-  <div id="panel" style="position:fixed;bottom:90px;right:22px;max-width:420px;background:rgba(255,255,255,0.10);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.20);border-radius:16px;padding:16px;display:none;">
-    <div style="font-weight:700;margin-bottom:8px;">
-      Results <span id="monthLabel" style="color:#cbd5e1;font-size:12px;"></span>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Priority bills total</span><strong id="priorityTotal">£0.00</strong></div>
-    <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
-    <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
-
-    <div id="partnerBreak" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.18);">
-      <div style="color:#cbd5e1;font-size:12px;margin-bottom:6px;">
-        Split: <span id="splitDesc">By income (all)</span>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your share (all bills)</span><strong id="yourShare">£0.00</strong></div>
-      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner share (all bills)</span><strong id="partnerShare">£0.00</strong></div>
-
-      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your share (priority)</span><strong id="yourPriorityShare">£0.00</strong></div>
-      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner share (priority)</span><strong id="partnerPriorityShare">£0.00</strong></div>
-
-      <div style="margin-top:10px;color:#cbd5e1;font-size:12px;">
-        <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your income</span><strong id="youIncomeOut">£0.00</strong></div>
-        <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner income</span><strong id="partnerIncomeOut">£0.00</strong></div>
-        <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your leftover after bills</span><strong id="youLeftover">£0.00</strong></div>
-        <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner leftover after bills</span><strong id="partnerLeftover">£0.00</strong></div>
-      </div>
-    </div>
-  </div>
-
-  <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
-    Created by <strong>Shounak Bhattacharjee</strong>
-  </footer>
-
-  <script>
-    // Helpers
-    function byId(id){ return document.getElementById(id); }
-    function toGBP(n){ return "£" + (Number(n || 0)).toFixed(2); }
-    function num(id){ return parseFloat(byId(id).value) || 0; }
-
-    const extrasEl = byId('extras');
-
-    const partnerTgl = byId('partnerToggle');
-    const splitIncomeAll = byId('splitIncomeAll');
-    const splitIncomePriority = byId('splitIncomePriority');
-    const splitEqual = byId('splitEqual');
-    const splitPercent = byId('splitPercent');
-
-    const incomeRow = byId('incomeRow');
-    const youIncome = byId('youIncome');
-    const partnerIncome = byId('partnerIncome');
-
-    const percentRow = byId('percentRow');
-    const youPctInput = byId('youPct');
-    const partnerPctTx = byId('partnerPctText');
-
-    const warnBox = byId('warnBox');
-
-    const inlinePriority = byId('inlinePriority');
-    const inlineMonthly = byId('inlineMonthly');
-    const inlineYearly  = byId('inlineYearly');
-
-    const subsTotalText = byId('subsTotalText');
-
-    const priorityTotalEl = byId('priorityTotal');
-    const monthlyTotalEl  = byId('monthlyTotal');
-    const yearlyTotalEl   = byId('yearlyTotal');
-    const monthLabelEl    = byId('monthLabel');
-
-    const partnerBreakEl = byId('partnerBreak');
-    const splitDescEl = byId('splitDesc');
-
-    const yourShareEl = byId('yourShare');
-    const partnerShareEl = byId('partnerShare');
-    const yourPriorityShareEl = byId('yourPriorityShare');
-    const partnerPriorityShareEl = byId('partnerPriorityShare');
-
-    const youIncomeOutEl = byId('youIncomeOut');
-    const partnerIncomeOutEl = byId('partnerIncomeOut');
-    const youLeftoverEl = byId('youLeftover');
-    const partnerLeftoverEl = byId('partnerLeftover');
-
-    // Pie chart elements
-    const pieYou = byId('pieYou');
-    const piePartner = byId('piePartner');
-    const pieCenterText = byId('pieCenterText');
-    const pieCenterSub = byId('pieCenterSub');
-    const chartYouPct = byId('chartYouPct');
-    const chartPartnerPct = byId('chartPartnerPct');
-    const chartYouAmt = byId('chartYouAmt');
-    const chartPartnerAmt = byId('chartPartnerAmt');
-    const chartModeLabel = byId('chartModeLabel');
-    const toggleChartModeBtn = byId('toggleChartModeBtn');
-
-    // Chart mode: "all" or "priority"
-    let chartMode = 'all';
-
-    function addExtraRow(label='', amount=''){
-      const row = document.createElement('div');
-      row.style.display = 'grid';
-      row.style.gridTemplateColumns = '1.35fr 0.65fr';
-      row.style.gap = '12px';
-      row.style.marginBottom = '10px';
-
-      const labelInput = document.createElement('input');
-      labelInput.type = 'text';
-      labelInput.placeholder = 'Label (e.g., Travel)';
-      labelInput.value = label;
-      labelInput.style.cssText = 'width:100%;padding:12px;border-radius:12px;';
-
-      const amountInput = document.createElement('input');
-      amountInput.type = 'number';
-      amountInput.placeholder = '0.00';
-      amountInput.min = '0';
-      amountInput.step = '0.01';
-      amountInput.value = amount;
-      amountInput.style.cssText = 'width:100%;padding:12px;border-radius:12px;';
-
-      labelInput.addEventListener('input', calculate);
-      amountInput.addEventListener('input', calculate);
-
-      row.appendChild(labelInput);
-      row.appendChild(amountInput);
-      extrasEl.appendChild(row);
-    }
-
-    addExtraRow(); addExtraRow(); addExtraRow();
-
-    byId('addExtraBtn').addEventListener('click', e => {
-      e.preventDefault();
-      addExtraRow();
-      calculate();
-    });
-
-    function updatePercent(){
-      let p = parseFloat(youPctInput.value || 0);
-      if (isNaN(p)) p = 0;
-      if (p < 0) p = 0;
-      if (p > 100) p = 100;
-      youPctInput.value = p;
-      partnerPctTx.textContent = (100 - p).toFixed(0);
-    }
-
-    function gatherExtras(){
-      return Array.from(extrasEl.children).map(row=>{
-        const inputs = row.querySelectorAll('input');
-        const label = (inputs[0].value || 'Extra').trim();
-        const amount = parseFloat(inputs[1].value || 0) || 0;
-        return [label, amount];
-      });
-    }
-
-    function incomeRatio(){
-      const yi = parseFloat(youIncome.value || 0) || 0;
-      const pi = parseFloat(partnerIncome.value || 0) || 0;
-      const total = yi + pi;
-      if (total <= 0) return { you: 0.5, partner: 0.5, needsIncome: true };
-      return { you: yi/total, partner: pi/total, needsIncome: false };
-    }
-
-    function currentSplitMode(){
-      if (splitPercent.checked) return 'percent';
-      if (splitEqual.checked) return 'equal';
-      if (splitIncomePriority.checked) return 'income_priority';
-      return 'income_all';
-    }
-
-    // Render pie chart using stroke-dasharray on circles
-    function updatePieChart(youAmount, partnerAmount, totalAmount, labelText){
-      const r = 52;
-      const circumference = 2 * Math.PI * r;
-
-      const safeTotal = (totalAmount > 0) ? totalAmount : 1;
-      const youPct = Math.max(0, Math.min(1, youAmount / safeTotal));
-      const partnerPct = Math.max(0, Math.min(1, partnerAmount / safeTotal));
-
-      // You slice first, then partner slice starts where you ended.
-      const youLen = circumference * youPct;
-      const partnerLen = circumference * partnerPct;
-
-      pieYou.setAttribute('stroke-dasharray', `${youLen} ${circumference - youLen}`);
-      pieYou.setAttribute('stroke-dashoffset', `0`);
-
-      piePartner.setAttribute('stroke-dasharray', `${partnerLen} ${circumference - partnerLen}`);
-      piePartner.setAttribute('stroke-dashoffset', `${-youLen}`);
-
-      pieCenterText.textContent = totalAmount > 0 ? `${Math.round(youPct*100)}% / ${Math.round(partnerPct*100)}%` : `0% / 0%`;
-      pieCenterSub.textContent = labelText;
-
-      chartYouPct.textContent = `${Math.round(youPct*100)}%`;
-      chartPartnerPct.textContent = `${Math.round(partnerPct*100)}%`;
-      chartYouAmt.textContent = toGBP(youAmount);
-      chartPartnerAmt.textContent = toGBP(partnerAmount);
-      chartModeLabel.textContent = labelText;
-    }
-
-    function calculate(){
-      const rent = num('rent');
-      const council = num('council');
-      const wifi = num('wifi');
-      const electricity = num('electricity');
-      const water = num('water');
-
-      // Subscriptions total from fields
-      const subNetflix = num('subNetflix');
-      const subPrime   = num('subPrime');
-      const subSpotify = num('subSpotify');
-      const subOther   = num('subOther');
-      const subsTotal  = subNetflix + subPrime + subSpotify + subOther;
-      subsTotalText.textContent = toGBP(subsTotal);
-
-      const base = [
-        ['Rent', rent],
-        ['Council Tax', council],
-        ['Wi-Fi', wifi],
-        ['Electricity', electricity],
-        ['Water', water],
-        ['Netflix', subNetflix],
-        ['Amazon Prime', subPrime],
-        ['Spotify', subSpotify],
-        ['Other Subscriptions', subOther]
-      ];
-
-      const extras = gatherExtras();
-      const monthly = [...base, ...extras].reduce((s, [,v]) => s + (Number(v) || 0), 0);
-      const yearly = monthly * 12;
-
-      // PRIORITY now includes Water
-      const priority = rent + electricity + council + wifi + water;
-      const nonPriority = Math.max(0, monthly - priority);
-
-      // Update totals live
-      inlinePriority.textContent = toGBP(priority);
-      inlineMonthly.textContent = toGBP(monthly);
-      inlineYearly.textContent  = toGBP(yearly);
-
-      priorityTotalEl.textContent = toGBP(priority);
-      monthlyTotalEl.textContent  = toGBP(monthly);
-      yearlyTotalEl.textContent   = toGBP(yearly);
-
-      const m = byId('monthInput').value || '';
-      monthLabelEl.textContent = m ? `• ${m}` : '';
-
-      // Partner split live
-      let yourAll = monthly;
-      let partnerAll = 0;
-      let yourPri = priority;
-      let partnerPri = 0;
-
-      if (partnerTgl.checked){
-        partnerBreakEl.style.display = 'block';
-
-        const mode = currentSplitMode();
-
-        if (mode === 'percent'){
-          const youPct = parseFloat(youPctInput.value || 0) || 0;
-          const y = Math.max(0, Math.min(100, youPct)) / 100;
-          const p = 1 - y;
-
-          yourAll = monthly * y; partnerAll = monthly * p;
-          yourPri = priority * y; partnerPri = priority * p;
-
-          splitDescEl.textContent = `Percentage (${(y*100).toFixed(0)}% / ${(p*100).toFixed(0)}%)`;
-          warnBox.style.display = 'none';
-        } else if (mode === 'equal'){
-          yourAll = monthly / 2; partnerAll = monthly / 2;
-          yourPri = priority / 2; partnerPri = priority / 2;
-
-          splitDescEl.textContent = 'Equal (50% / 50%)';
-          warnBox.style.display = 'none';
-        } else {
-          const r = incomeRatio();
-          warnBox.style.display = r.needsIncome ? 'block' : 'none';
-
-          if (mode === 'income_all'){
-            yourAll = monthly * r.you; partnerAll = monthly * r.partner;
-            yourPri = priority * r.you; partnerPri = priority * r.partner;
-
-            splitDescEl.textContent = `By income (all) (${(r.you*100).toFixed(0)}% / ${(r.partner*100).toFixed(0)}%)`;
-          } else {
-            // Income priority + 50/50 rest
-            yourPri = priority * r.you; partnerPri = priority * r.partner;
-
-            const yourRest = nonPriority / 2;
-            const partnerRest = nonPriority / 2;
-
-            yourAll = yourPri + yourRest;
-            partnerAll = partnerPri + partnerRest;
-
-            splitDescEl.textContent = `Income priority + 50/50 rest (${(r.you*100).toFixed(0)}% / ${(r.partner*100).toFixed(0)}%)`;
-          }
-        }
-
-        yourShareEl.textContent = toGBP(yourAll);
-        partnerShareEl.textContent = toGBP(partnerAll);
-
-        yourPriorityShareEl.textContent = toGBP(yourPri);
-        partnerPriorityShareEl.textContent = toGBP(partnerPri);
-
-        const yi = parseFloat(youIncome.value || 0) || 0;
-        const pi = parseFloat(partnerIncome.value || 0) || 0;
-
-        youIncomeOutEl.textContent = toGBP(yi);
-        partnerIncomeOutEl.textContent = toGBP(pi);
-
-        youLeftoverEl.textContent = toGBP(yi - yourAll);
-        partnerLeftoverEl.textContent = toGBP(pi - partnerAll);
-      } else {
-        partnerBreakEl.style.display = 'none';
-        warnBox.style.display = 'none';
-      }
-
-      // Update pie chart regardless of partner toggle:
-      // If partner toggle OFF, partner slice will be 0 and your slice 100%.
-      if (chartMode === 'priority'){
-        updatePieChart(yourPri, partnerPri, (yourPri + partnerPri), 'Priority bills');
-        toggleChartModeBtn.textContent = 'Show All';
-      } else {
-        updatePieChart(yourAll, partnerAll, (yourAll + partnerAll), 'All bills');
-        toggleChartModeBtn.textContent = 'Show Priority';
-      }
-    }
-
-    function refreshPartnerUI(){
-      const show = partnerTgl.checked;
-      incomeRow.style.display = show ? 'block' : 'none';
-      percentRow.style.display = (show && splitPercent.checked) ? 'block' : 'none';
-      updatePercent();
-      calculate();
-    }
-
-    // Panel toggle
-    function toggle(el){
-      el.style.display = (el.style.display==='none' || el.style.display==='') ? 'block' : 'none';
-    }
-    byId('fabBtn').addEventListener('click', ()=>toggle(byId('panel')));
-
-    // Chart mode toggle
-    toggleChartModeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      chartMode = (chartMode === 'all') ? 'priority' : 'all';
-      calculate();
-    });
-
-    // LIVE wiring
-    [
-      'monthInput','rent','council','wifi','electricity','water',
-      'subNetflix','subPrime','subSpotify','subOther',
-      'youIncome','partnerIncome','youPct',
-      'partnerToggle'
-    ].forEach(id => byId(id).addEventListener('input', calculate));
-
-    partnerTgl.addEventListener('change', refreshPartnerUI);
-    splitIncomeAll.addEventListener('change', refreshPartnerUI);
-    splitIncomePriority.addEventListener('change', refreshPartnerUI);
-    splitEqual.addEventListener('change', refreshPartnerUI);
-    splitPercent.addEventListener('change', refreshPartnerUI);
-    youPctInput.addEventListener('input', () => { updatePercent(); calculate(); });
-
-    // Export CSV
-    byId('exportBtn').addEventListener('click', () => {
-      const month = byId('monthInput').value || 'Unspecified';
-
-      const rent = num('rent');
-      const council = num('council');
-      const wifi = num('wifi');
-      const electricity = num('electricity');
-      const water = num('water');
-
-      const subNetflix = num('subNetflix');
-      const subPrime   = num('subPrime');
-      const subSpotify = num('subSpotify');
-      const subOther   = num('subOther');
-
-      const base = [
-        ['Rent', rent],
-        ['Council Tax', council],
-        ['Wi-Fi', wifi],
-        ['Electricity', electricity],
-        ['Water', water],
-        ['Netflix', subNetflix],
-        ['Amazon Prime', subPrime],
-        ['Spotify', subSpotify],
-        ['Other Subscriptions', subOther]
-      ];
-
-      const extras = gatherExtras();
-      const monthly = [...base, ...extras].reduce((s, [,v]) => s + (Number(v)||0), 0);
-      const yearly = monthly * 12;
-
-      const priority = rent + electricity + council + wifi + water;
-      const nonPriority = Math.max(0, monthly - priority);
-
-      const rows = [
-        ['Month', month],
-        ['Priority Bills Total', priority.toFixed(2)],
-        ['Non-Priority Total', nonPriority.toFixed(2)],
-        ...base,
-        ...extras,
-        ['Monthly Total', monthly.toFixed(2)],
-        ['Yearly Total', yearly.toFixed(2)]
-      ];
-
-      if (partnerTgl.checked){
-        const mode = currentSplitMode();
-
-        let yourAll = 0, partnerAll = 0, yourPri = 0, partnerPri = 0;
-        let desc = '';
-
-        if (mode === 'percent'){
-          const youPct = parseFloat(youPctInput.value || 0) || 0;
-          const y = Math.max(0, Math.min(100, youPct)) / 100;
-          const p = 1 - y;
-          yourAll = monthly * y; partnerAll = monthly * p;
-          yourPri = priority * y; partnerPri = priority * p;
-          desc = `Percentage (${(y*100).toFixed(0)}% / ${(p*100).toFixed(0)}%)`;
-        } else if (mode === 'equal'){
-          yourAll = monthly/2; partnerAll = monthly/2;
-          yourPri = priority/2; partnerPri = priority/2;
-          desc = 'Equal (50% / 50%)';
-        } else {
-          const r = incomeRatio();
-          if (mode === 'income_all'){
-            yourAll = monthly * r.you; partnerAll = monthly * r.partner;
-            yourPri = priority * r.you; partnerPri = priority * r.partner;
-            desc = `By income (all) (${(r.you*100).toFixed(0)}% / ${(r.partner*100).toFixed(0)}%)`;
-          } else {
-            yourPri = priority * r.you; partnerPri = priority * r.partner;
-            yourAll = yourPri + (nonPriority/2);
-            partnerAll = partnerPri + (nonPriority/2);
-            desc = `Income priority + 50/50 rest (${(r.you*100).toFixed(0)}% / ${(r.partner*100).toFixed(0)}%)`;
-          }
-        }
-
-        const yi = parseFloat(youIncome.value || 0) || 0;
-        const pi = parseFloat(partnerIncome.value || 0) || 0;
-
-        rows.push(['Split Type', desc]);
-        rows.push(['Your Share (Priority)', yourPri.toFixed(2)]);
-        rows.push(['Partner Share (Priority)', partnerPri.toFixed(2)]);
-        rows.push(['Your Share (All Bills)', yourAll.toFixed(2)]);
-        rows.push(['Partner Share (All Bills)', partnerAll.toFixed(2)]);
-        rows.push(['Your Income', yi.toFixed(2)]);
-        rows.push(['Partner Income', pi.toFixed(2)]);
-        rows.push(['Your Leftover After Bills', (yi - yourAll).toFixed(2)]);
-        rows.push(['Partner Leftover After Bills', (pi - partnerAll).toFixed(2)]);
-      }
-
-      const csv =
-        'data:text/csv;charset=utf-8,' +
-        'Category,Amount (£)\n' +
-        rows.map(r => r.map(x => String(x).replaceAll(',', ' ')).join(',')).join('\n');
-
-      const a = document.createElement('a');
-      a.href = encodeURI(csv);
-      a.download = `monthly_expenses_${month.replace(/-/g,'_') || 'unspecified'}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    });
-
-    // Reset
-    byId('resetBtn').addEventListener('click', () => {
-      [
-        'rent','council','wifi','electricity','water',
-        'subNetflix','subPrime','subSpotify','subOther',
-        'youIncome','partnerIncome'
-      ].forEach(id => byId(id).value='');
-
-      byId('monthInput').value = '';
-
-      partnerTgl.checked = false;
-      splitIncomeAll.checked = true;
-      splitIncomePriority.checked = false;
-      splitEqual.checked = false;
-      splitPercent.checked = false;
-
-      youPctInput.value = 50;
-      updatePercent();
-
-      extrasEl.innerHTML = '';
-      addExtraRow(); addExtraRow(); addExtraRow();
-
-      chartMode = 'all';
-      refreshPartnerUI();
-      calculate();
-    });
-
-    // Initial render
-    updatePercent();
-    refreshPartnerUI();
-    calculate();
-  </script>
+<div style="display:flex;align-items:center;justify-content:center;padding:56px 16px;">
+<div style="width:100%;max-width:1100px;">
+<h1 style="margin:0 0 8px 0;font-weight:700;text-align:center;">Monthly Expenses Tracker</h1>
+<p style="text-align:center;color:#cbd5e1;font-size:14px;margin:0 0 22px 0;">
+Auto-calculates live as you type.
+</p>
+
+<div style="
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+border-radius:22px; padding:30px;
+border:1px solid rgba(255,255,255,0.18);
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+">
+
+<!-- Top bar -->
+<div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px;">
+<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+<label style="display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);">
+<span>Month</span>
+<input id="monthInput" type="month" style="padding:10px 12px;border-radius:10px;">
+</label>
+<span style="color:#cbd5e1;font-size:12px;">Calculations update instantly</span>
+</div>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;">
+<button id="resetBtn" style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.16);color:#fff;cursor:pointer;">
+Reset
+</button>
+<button id="exportBtn" style="padding:12px 14px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
+Export CSV
+</button>
+</div>
+</div>
+
+<!-- Two-column grid -->
+<div style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:26px;">
+
+<!-- Expenses -->
+<div>
+<div style="margin-bottom:16px;">
+<label style="display:block;margin-bottom:10px;">Rent <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
+<div style="position:relative;">
+<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
+<input id="rent" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div style="margin-bottom:16px;">
+<label style="display:block;margin-bottom:10px;">Council Tax <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
+<div style="position:relative;">
+<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
+<input id="council" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div style="margin-bottom:16px;">
+<label style="display:block;margin-bottom:10px;">Wi-Fi / Broadband <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
+<div style="position:relative;">
+<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
+<input id="wifi" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div style="margin-bottom:16px;">
+<label style="display:block;margin-bottom:10px;">Electricity <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
+<div style="position:relative;">
+<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
+<input id="electricity" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div style="margin-bottom:18px;">
+<label style="display:block;margin-bottom:10px;">Water <span style="color:#86efac;font-size:12px;">(Priority)</span></label>
+<div style="position:relative;">
+<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#86efac;font-weight:700;">£</span>
+<input id="water" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:16px 12px 16px 42px;border-radius:14px;">
+</div>
+</div>
+
+<!-- Subscriptions -->
+<div style="
+margin-top:6px;
+padding:14px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.16);
+background:rgba(255,255,255,0.06);
+">
+<div style="font-weight:700;margin-bottom:10px;">Subscriptions</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+<div style="position:relative;">
+<div class="tiny-muted" style="margin-bottom:8px;">Netflix</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="subNetflix" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+
+<div style="position:relative;">
+<div class="tiny-muted" style="margin-bottom:8px;">Amazon Prime</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="subPrime" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+
+<div style="position:relative;">
+<div class="tiny-muted" style="margin-bottom:8px;">Spotify</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="subSpotify" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+
+<div style="position:relative;">
+<div class="tiny-muted" style="margin-bottom:8px;">Other subscriptions</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="subOther" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div class="tiny-muted" style="margin-top:10px;">
+Subscriptions total: <strong id="subsTotalText">£0.00</strong>
+</div>
+</div>
+</div>
+
+<!-- Partner, Pie chart & Extras -->
+<div>
+<div style="margin-bottom:16px;">
+<label style="display:block;margin-bottom:10px;">Partner Split</label>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+<label style="display:flex;gap:8px;align-items:center;">
+<input id="partnerToggle" type="checkbox">
+Add partner + incomes
+</label>
+
+<label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+<input type="radio" name="splitType" id="splitIncomeAll" value="income_all" checked>
+By income (all)
+</label>
+
+<label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+<input type="radio" name="splitType" id="splitIncomePriority" value="income_priority">
+Income priority + 50/50 rest
+</label>
+
+<label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+<input type="radio" name="splitType" id="splitEqual" value="equal">
+Equal
+</label>
+
+<label style="display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+<input type="radio" name="splitType" id="splitPercent" value="percent">
+Percentage
+</label>
+</div>
+
+<div id="incomeRow" style="display:none;margin-top:12px;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+<div style="position:relative;">
+<div style="color:#cbd5e1;font-size:12px;margin-bottom:8px;">Your monthly income</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="youIncome" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+
+<div style="position:relative;">
+<div style="color:#cbd5e1;font-size:12px;margin-bottom:8px;">Partner monthly income</div>
+<span style="position:absolute;left:12px;top:40px;transform:translateY(-50%);color:#93c5fd;font-weight:700;">£</span>
+<input id="partnerIncome" type="number" placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+style="width:100%;padding:14px 12px 14px 42px;border-radius:14px;">
+</div>
+</div>
+
+<div style="margin-top:10px;color:#cbd5e1;font-size:12px;">
+<strong>Important:</strong> Rent is always split by income when partner mode is on.
+(Other bills follow the split mode you choose.)
+</div>
+</div>
+
+<div id="percentRow" style="display:none;margin-top:12px;color:#cbd5e1;font-size:12px;">
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+<span>Your share %</span>
+<input id="youPct" type="number" min="0" max="100" step="1" value="50"
+style="width:110px;padding:12px;border-radius:12px;">
+<span>Partner % = <span id="partnerPctText">50</span></span>
+</div>
+</div>
+
+<div id="warnBox" style="display:none;margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.12);color:#fee2e2;font-size:12px;">
+Please enter both incomes to split rent by income. Calculations remain live.
+</div>
+</div>
+
+<!-- Pie chart -->
+<div style="
+margin-bottom:16px;
+padding:14px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.16);
+background:rgba(255,255,255,0.06);
+">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+<div>
+<div style="font-weight:700;">Split Pie Chart (All Bills)</div>
+<div class="tiny-muted">Updates instantly based on your split settings</div>
+</div>
+<button id="toggleChartModeBtn" style="padding:10px 12px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:800;cursor:pointer;">
+Show Priority
+</button>
+</div>
+
+<div style="display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center;margin-top:12px;">
+<svg id="pieSvg" width="140" height="140" viewBox="0 0 140 140" style="display:block;">
+<circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="18"></circle>
+
+<circle id="pieYou"
+cx="70" cy="70" r="52" fill="none"
+stroke="var(--accent)" stroke-width="18"
+transform="rotate(-90 70 70)"
+stroke-dasharray="0 999"></circle>
+
+<circle id="piePartner"
+cx="70" cy="70" r="52" fill="none"
+stroke="rgba(147,197,253,0.95)" stroke-width="18"
+transform="rotate(-90 70 70)"
+stroke-dasharray="0 999"></circle>
+
+<text id="pieCenterText" x="70" y="74" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="700">100%</text>
+<text id="pieCenterSub" x="70" y="92" text-anchor="middle" font-size="10" fill="#cbd5e1">All bills</text>
+</svg>
+
+<div>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+<span style="width:10px;height:10px;border-radius:999px;background:var(--accent);display:inline-block;"></span>
+<div>
+<div style="font-weight:700;">You</div>
+<div class="tiny-muted"><span id="chartYouPct">0%</span> • <span id="chartYouAmt">£0.00</span></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;">
+<span style="width:10px;height:10px;border-radius:999px;background:rgba(147,197,253,0.95);display:inline-block;"></span>
+<div>
+<div style="font-weight:700;">Partner</div>
+<div class="tiny-muted"><span id="chartPartnerPct">0%</span> • <span id="chartPartnerAmt">£0.00</span></div>
+</div>
+</div>
+
+<div class="tiny-muted" style="margin-top:10px;">
+Chart currently showing: <strong id="chartModeLabel">All bills</strong>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Extras -->
+<div style="margin-bottom:10px;">
+<label style="display:block;margin-bottom:10px;">Extra Expenses</label>
+<div id="extras"></div>
+
+<div style="display:flex;gap:10px;margin-top:10px;">
+<button id="addExtraBtn" style="padding:12px 14px;border-radius:12px;border:1px dashed rgba(255,255,255,0.30);background:transparent;color:#fff;cursor:pointer;">
++ Add extra
+</button>
+</div>
+
+<div style="color:#cbd5e1;font-size:12px;margin-top:8px;">Add custom lines (e.g., travel, books, gym).</div>
+</div>
+</div>
+</div>
+
+<!-- Inline results -->
+<div id="inlineResults" style="margin-top:18px;text-align:center;color:#e5e7eb;">
+<div>Priority bills (Rent + Electricity + Council Tax + Wi-Fi + Water): <strong id="inlinePriority">£0.00</strong></div>
+<div style="margin-top:8px;">Monthly total: <strong id="inlineMonthly">£0.00</strong></div>
+<div>Yearly total: <strong id="inlineYearly">£0.00</strong></div>
+</div>
+
+<!-- Anecdote -->
+<div style="
+margin-top:18px;
+padding:14px 16px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.16);
+background:rgba(255,255,255,0.06);
+color:#e5e7eb;
+line-height:1.5;
+font-size:13px;
+">
+<div style="font-weight:800;margin-bottom:6px;">Why I built this</div>
+I made this tracker after one of those “we definitely didn’t spend that much” months in London — where rent went out,
+a couple of direct debits quietly renewed, and suddenly the bank balance looked like it had teleported.
+I wanted something simple that updates instantly, shows the non-negotiables first, and helps couples split costs fairly
+(especially rent) without turning it into a spreadsheet debate at 11pm.
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- Floating Results -->
+<button id="fabBtn" style="position:fixed;bottom:22px;right:22px;padding:12px 14px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-dark);font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+Results
+</button>
+
+<div id="panel" style="position:fixed;bottom:90px;right:22px;max-width:420px;background:rgba(255,255,255,0.10);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.20);border-radius:16px;padding:16px;display:none;">
+<div style="font-weight:700;margin-bottom:8px;">
+Results <span id="monthLabel" style="color:#cbd5e1;font-size:12px;"></span>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Priority bills total</span><strong id="priorityTotal">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
+
+<div id="partnerBreak" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.18);">
+<div style="color:#cbd5e1;font-size:12px;margin-bottom:6px;">
+Split: <span id="splitDesc">By income (all)</span>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your share (all bills)</span><strong id="yourShare">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner share (all bills)</span><strong id="partnerShare">£0.00</strong></div>
+
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your share (priority)</span><strong id="yourPriorityShare">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner share (priority)</span><strong id="partnerPriorityShare">£0.00</strong></div>
+
+<div style="margin-top:10px;color:#cbd5e1;font-size:12px;">
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your income</span><strong id="youIncomeOut">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner income</span><strong id="partnerIncomeOut">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your leftover after bills</span><strong id="youLeftover">£0.00</strong></div>
+<div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner leftover after bills</span><strong id="partnerLeftover">£0.00</strong></div>
+</div>
+</div>
+</div>
+
+<footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
+Created by <strong>Shounak Bhattacharjee</strong>
+</footer>
+
+<script>
+function byId(id){ return document.getElementById(id); }
+function toGBP(n){ return "£" + (Number(n || 0)).toFixed(2); }
+function num(id){ return parseFloat(byId(id).value) || 0; }
+
+const extrasEl = byId('extras');
+
+const partnerTgl = byId('partnerToggle');
+const splitIncomeAll = byId('splitIncomeAll');
+const splitIncomePriority = byId('splitIncomePriority');
+const splitEqual = byId('splitEqual');
+const splitPercent = byId('splitPercent');
+
+const incomeRow = byId('incomeRow');
+const youIncome = byId('youIncome');
+const partnerIncome = byId('partnerIncome');
+
+const percentRow = byId('percentRow');
+const youPctInput = byId('youPct');
+const partnerPctTx = byId('partnerPctText');
+
+const warnBox = byId('warnBox');
+
+const inlinePriority = byId('inlinePriority');
+const inlineMonthly = byId('inlineMonthly');
+const inlineYearly = byId('inlineYearly');
+
+const subsTotalText = byId('subsTotalText');
+
+const priorityTotalEl = byId('priorityTotal');
+const monthlyTotalEl = byId('monthlyTotal');
+const yearlyTotalEl = byId('yearlyTotal');
+const monthLabelEl = byId('monthLabel');
+
+const partnerBreakEl = byId('partnerBreak');
+const splitDescEl = byId('splitDesc');
+
+const yourShareEl = byId('yourShare');
+const partnerShareEl = byId('partnerShare');
+const yourPriorityShareEl = byId('yourPriorityShare');
+const partnerPriorityShareEl = byId('partnerPriorityShare');
+
+const youIncomeOutEl = byId('youIncomeOut');
+const partnerIncomeOutEl = byId('partnerIncomeOut');
+const youLeftoverEl = byId('youLeftover');
+const partnerLeftoverEl = byId('partnerLeftover');
+
+// Pie chart elements
+const pieYou = byId('pieYou');
+const piePartner = byId('piePartner');
+const pieCenterText = byId('pieCenterText');
+const pieCenterSub = byId('pieCenterSub');
+const chartYouPct = byId('chartYouPct');
+const chartPartnerPct = byId('chartPartnerPct');
+const chartYouAmt = byId('chartYouAmt');
+const chartPartnerAmt = byId('chartPartnerAmt');
+const chartModeLabel = byId('chartModeLabel');
+const toggleChartModeBtn = byId('toggleChartModeBtn');
+
+let chartMode = 'all';
+
+function addExtraRow(label='', amount=''){
+const row = document.createElement('div');
+row.style.display = 'grid';
+row.style.gridTemplateColumns = '1.35fr 0.65fr';
+row.style.gap = '12px';
+row.style.marginBottom = '10px';
+
+const labelInput = document.createElement('input');
+labelInput.type = 'text';
+labelInput.placeholder = 'Label (e.g., Travel)';
+labelInput.value = label;
+labelInput.style.cssText = 'width:100%;padding:12px;border-radius:12px;';
+
+const amountInput = document.createElement('input');
+amountInput.type = 'number';
+amountInput.placeholder = '0.00';
+amountInput.min = '0';
+amountInput.step = '0.01';
+amountInput.value = amount;
+amountInput.style.cssText = 'width:100%;padding:12px;border-radius:12px;';
+
+labelInput.addEventListener('input', calculate);
+amountInput.addEventListener('input', calculate);
+
+row.appendChild(labelInput);
+row.appendChild(amountInput);
+extrasEl.appendChild(row);
+}
+
+addExtraRow(); addExtraRow(); addExtraRow();
+
+byId('addExtraBtn').addEventListener('click', e => {
+e.preventDefault();
+addExtraRow();
+calculate();
+});
+
+function updatePercent(){
+let p = parseFloat(youPctInput.value || 0);
+if (isNaN(p)) p = 0;
+if (p < 0) p = 0;
+if (p > 100) p = 100;
+youPctInput.value = p;
+partnerPctTx.textContent = (100 - p).toFixed(0);
+}
+
+function gatherExtras(){
+return Array.from(extrasEl.children).map(row=>{
+const inputs = row.querySelectorAll('input');
+const label = (inputs[0].value || 'Extra').trim();
+const amount = parseFloat(inputs[1].value || 0) || 0;
+return [label, amount];
+});
+}
+
+function incomeRatio(){
+const yi = parseFloat(youIncome.value || 0) || 0;
+const pi = parseFloat(partnerIncome.value || 0) || 0;
+const total = yi + pi;
+if (total <= 0) return { you: 0.5, partner: 0.5, needsIncome: true };
+return { you: yi/total, partner: pi/total, needsIncome: false };
+}
+
+function currentSplitMode(){
+if (splitPercent.checked) return 'percent';
+if (splitEqual.checked) return 'equal';
+if (splitIncomePriority.checked) return 'income_priority';
+return 'income_all';
+}
+
+function updatePieChart(youAmount, partnerAmount, totalAmount, labelText){
+const r = 52;
+const circumference = 2 * Math.PI * r;
+
+const safeTotal = (totalAmount > 0) ? totalAmount : 1;
+const youPct = Math.max(0, Math.min(1, youAmount / safeTotal));
+const partnerPct = Math.max(0, Math.min(1, partnerAmount / safeTotal));
+
+const youLen = circumference * youPct;
+const partnerLen = circumference * partnerPct;
+
+pieYou.setAttribute('stroke-dasharray', `${youLen} ${circumference - youLen}`);
+pieYou.setAttribute('stroke-dashoffset', `0`);
+
+piePartner.setAttribute('stroke-dasharray', `${partnerLen} ${circumference - partnerLen}`);
+piePartner.setAttribute('stroke-dashoffset', `${-youLen}`);
+
+pieCenterText.textContent = totalAmount > 0 ? `${Math.round(youPct*100)}% / ${Math.round(partnerPct*100)}%` : `0% / 0%`;
+pieCenterSub.textContent = labelText;
+
+chartYouPct.textContent = `${Math.round(youPct*100)}%`;
+chartPartnerPct.textContent = `${Math.round(partnerPct*100)}%`;
+chartYouAmt.textContent = toGBP(youAmount);
+chartPartnerAmt.textContent = toGBP(partnerAmount);
+chartModeLabel.textContent = labelText;
+}
+
+// CORE RULE ADDED: Rent is ALWAYS split by income when partner mode is on.
+// Everything else follows the split mode you selected.
+function calculate(){
+const rent = num('rent');
+const council = num('council');
+const wifi = num('wifi');
+const electricity = num('electricity');
+const water = num('water');
+
+const subNetflix = num('subNetflix');
+const subPrime = num('subPrime');
+const subSpotify = num('subSpotify');
+const subOther = num('subOther');
+const subsTotal = subNetflix + subPrime + subSpotify + subOther;
+subsTotalText.textContent = toGBP(subsTotal);
+
+const extras = gatherExtras();
+const extrasTotal = extras.reduce((s, [,v]) => s + (Number(v) || 0), 0);
+
+const monthly = rent + council + wifi + electricity + water + subsTotal + extrasTotal;
+const yearly = monthly * 12;
+
+const priority = rent + electricity + council + wifi + water;
+const nonPriority = Math.max(0, monthly - priority);
+
+inlinePriority.textContent = toGBP(priority);
+inlineMonthly.textContent = toGBP(monthly);
+inlineYearly.textContent = toGBP(yearly);
+
+priorityTotalEl.textContent = toGBP(priority);
+monthlyTotalEl.textContent = toGBP(monthly);
+yearlyTotalEl.textContent = toGBP(yearly);
+
+const m = byId('monthInput').value || '';
+monthLabelEl.textContent = m ? `• ${m}` : '';
+
+// Default when partner is OFF
+let yourAll = monthly, partnerAll = 0;
+let yourPri = priority, partnerPri = 0;
+
+// Additional: track rent split explicitly (always income-based if partner on)
+let rentYou = rent, rentPartner = 0;
+
+if (partnerTgl.checked){
+partnerBreakEl.style.display = 'block';
+
+const r = incomeRatio(); // used for rent always
+warnBox.style.display = r.needsIncome ? 'block' : 'none';
+
+rentYou = rent * r.you;
+rentPartner = rent * r.partner;
+
+// Remaining amounts (everything except rent)
+const restMonthly = Math.max(0, monthly - rent);
+const restPriority = Math.max(0, priority - rent);
+
+const mode = currentSplitMode();
+
+let restYouAll = 0, restPartnerAll = 0;
+let restYouPri = 0, restPartnerPri = 0;
+
+if (mode === 'percent'){
+const youPct = parseFloat(youPctInput.value || 0) || 0;
+const y = Math.max(0, Math.min(100, youPct)) / 100;
+const p = 1 - y;
+
+restYouAll = restMonthly * y; restPartnerAll = restMonthly * p;
+restYouPri = restPriority * y; restPartnerPri = restPriority * p;
+
+splitDescEl.textContent = `Percentage (Rent by income) + ${Math.round(y*100)}% / ${Math.round(p*100)}% rest`;
+}
+else if (mode === 'equal'){
+restYouAll = restMonthly / 2; restPartnerAll = restMonthly / 2;
+restYouPri = restPriority / 2; restPartnerPri = restPriority / 2;
+
+splitDescEl.textContent = 'Equal (Rent by income) + 50% / 50% rest';
+}
+else if (mode === 'income_all'){
+restYouAll = restMonthly * r.you; restPartnerAll = restMonthly * r.partner;
+restYouPri = restPriority * r.you; restPartnerPri = restPriority * r.partner;
+
+splitDescEl.textContent = `By income (all) — includes rent`;
+}
+else {
+// income_priority + 50/50 rest (but rent still income-based anyway)
+// Priority remainder split by income
+restYouPri = restPriority * r.you;
+restPartnerPri = restPriority * r.partner;
+
+// Non-priority remainder split 50/50
+const restNonPri = Math.max(0, restMonthly - restPriority);
+restYouAll = restYouPri + (restNonPri / 2);
+restPartnerAll = restPartnerPri + (restNonPri / 2);
+
+splitDescEl.textContent = `Income priority + 50/50 rest (rent always by income)`;
+}
+
+// Combine rent + rest
+yourAll = rentYou + restYouAll;
+partnerAll = rentPartner + restPartnerAll;
+
+yourPri = rentYou + restYouPri;
+partnerPri = rentPartner + restPartnerPri;
+
+yourShareEl.textContent = toGBP(yourAll);
+partnerShareEl.textContent = toGBP(partnerAll);
+
+yourPriorityShareEl.textContent = toGBP(yourPri);
+partnerPriorityShareEl.textContent = toGBP(partnerPri);
+
+const yi = parseFloat(youIncome.value || 0) || 0;
+const pi = parseFloat(partnerIncome.value || 0) || 0;
+
+youIncomeOutEl.textContent = toGBP(yi);
+partnerIncomeOutEl.textContent = toGBP(pi);
+
+youLeftoverEl.textContent = toGBP(yi - yourAll);
+partnerLeftoverEl.textContent = toGBP(pi - partnerAll);
+} else {
+partnerBreakEl.style.display = 'none';
+warnBox.style.display = 'none';
+}
+
+// Pie chart
+if (chartMode === 'priority'){
+updatePieChart(yourPri, partnerPri, (yourPri + partnerPri), 'Priority bills');
+toggleChartModeBtn.textContent = 'Show All';
+} else {
+updatePieChart(yourAll, partnerAll, (yourAll + partnerAll), 'All bills');
+toggleChartModeBtn.textContent = 'Show Priority';
+}
+}
+
+function refreshPartnerUI(){
+const show = partnerTgl.checked;
+incomeRow.style.display = show ? 'block' : 'none';
+percentRow.style.display = (show && splitPercent.checked) ? 'block' : 'none';
+updatePercent();
+calculate();
+}
+
+function toggle(el){
+el.style.display = (el.style.display==='none' || el.style.display==='') ? 'block' : 'none';
+}
+byId('fabBtn').addEventListener('click', ()=>toggle(byId('panel')));
+
+toggleChartModeBtn.addEventListener('click', (e) => {
+e.preventDefault();
+chartMode = (chartMode === 'all') ? 'priority' : 'all';
+calculate();
+});
+
+// LIVE wiring
+[
+'monthInput','rent','council','wifi','electricity','water',
+'subNetflix','subPrime','subSpotify','subOther',
+'youIncome','partnerIncome','youPct',
+'partnerToggle'
+].forEach(id => byId(id).addEventListener('input', calculate));
+
+partnerTgl.addEventListener('change', refreshPartnerUI);
+splitIncomeAll.addEventListener('change', refreshPartnerUI);
+splitIncomePriority.addEventListener('change', refreshPartnerUI);
+splitEqual.addEventListener('change', refreshPartnerUI);
+splitPercent.addEventListener('change', refreshPartnerUI);
+youPctInput.addEventListener('input', () => { updatePercent(); calculate(); });
+
+// Export CSV
+byId('exportBtn').addEventListener('click', () => {
+const month = byId('monthInput').value || 'Unspecified';
+
+const rent = num('rent');
+const council = num('council');
+const wifi = num('wifi');
+const electricity = num('electricity');
+const water = num('water');
+
+const subNetflix = num('subNetflix');
+const subPrime = num('subPrime');
+const subSpotify = num('subSpotify');
+const subOther = num('subOther');
+const subsTotal = subNetflix + subPrime + subSpotify + subOther;
+
+const extras = gatherExtras();
+const extrasTotal = extras.reduce((s, [,v]) => s + (Number(v) || 0), 0);
+
+const monthly = rent + council + wifi + electricity + water + subsTotal + extrasTotal;
+const yearly = monthly * 12;
+
+const priority = rent + electricity + council + wifi + water;
+const nonPriority = Math.max(0, monthly - priority);
+
+const rows = [
+['Month', month],
+['Priority Bills Total', priority.toFixed(2)],
+['Non-Priority Total', nonPriority.toFixed(2)],
+['Rent', rent.toFixed(2)],
+['Council Tax', council.toFixed(2)],
+['Wi-Fi', wifi.toFixed(2)],
+['Electricity', electricity.toFixed(2)],
+['Water', water.toFixed(2)],
+['Netflix', subNetflix.toFixed(2)],
+['Amazon Prime', subPrime.toFixed(2)],
+['Spotify', subSpotify.toFixed(2)],
+['Other Subscriptions', subOther.toFixed(2)],
+...extras.map(([l,v]) => [l, (Number(v)||0).toFixed(2)]),
+['Monthly Total', monthly.toFixed(2)],
+['Yearly Total', yearly.toFixed(2)]
+];
+
+if (partnerTgl.checked){
+const r = incomeRatio();
+const mode = currentSplitMode();
+
+// Rent always by income
+const rentYou = rent * r.you;
+const rentPartner = rent * r.partner;
+
+const restMonthly = Math.max(0, monthly - rent);
+const restPriority = Math.max(0, priority - rent);
+
+let restYouAll = 0, restPartnerAll = 0;
+let restYouPri = 0, restPartnerPri = 0;
+let desc = '';
+
+if (mode === 'percent'){
+const youPct = parseFloat(youPctInput.value || 0) || 0;
+const y = Math.max(0, Math.min(100, youPct)) / 100;
+const p = 1 - y;
+restYouAll = restMonthly * y; restPartnerAll = restMonthly * p;
+restYouPri = restPriority * y; restPartnerPri = restPriority * p;
+desc = `Percentage (Rent by income) + ${Math.round(y*100)}%/${Math.round(p*100)}% rest`;
+} else if (mode === 'equal'){
+restYouAll = restMonthly/2; restPartnerAll = restMonthly/2;
+restYouPri = restPriority/2; restPartnerPri = restPriority/2;
+desc = 'Equal (Rent by income) + 50/50 rest';
+} else if (mode === 'income_all'){
+restYouAll = restMonthly * r.you; restPartnerAll = restMonthly * r.partner;
+restYouPri = restPriority * r.you; restPartnerPri = restPriority * r.partner;
+desc = 'By income (all) — includes rent';
+} else {
+restYouPri = restPriority * r.you; restPartnerPri = restPriority * r.partner;
+const restNonPri = Math.max(0, restMonthly - restPriority);
+restYouAll = restYouPri + (restNonPri/2);
+restPartnerAll = restPartnerPri + (restNonPri/2);
+desc = 'Income priority + 50/50 rest (rent always by income)';
+}
+
+const yourAll = rentYou + restYouAll;
+const partnerAll = rentPartner + restPartnerAll;
+const yourPri = rentYou + restYouPri;
+const partnerPri = rentPartner + restPartnerPri;
+
+const yi = parseFloat(youIncome.value || 0) || 0;
+const pi = parseFloat(partnerIncome.value || 0) || 0;
+
+rows.push(['Split Type', desc]);
+rows.push(['Your Rent Share (Income-based)', rentYou.toFixed(2)]);
+rows.push(['Partner Rent Share (Income-based)', rentPartner.toFixed(2)]);
+rows.push(['Your Share (Priority)', yourPri.toFixed(2)]);
+rows.push(['Partner Share (Priority)', partnerPri.toFixed(2)]);
+rows.push(['Your Share (All Bills)', yourAll.toFixed(2)]);
+rows.push(['Partner Share (All Bills)', partnerAll.toFixed(2)]);
+rows.push(['Your Income', yi.toFixed(2)]);
+rows.push(['Partner Income', pi.toFixed(2)]);
+rows.push(['Your Leftover After Bills', (yi - yourAll).toFixed(2)]);
+rows.push(['Partner Leftover After Bills', (pi - partnerAll).toFixed(2)]);
+}
+
+const csv =
+'data:text/csv;charset=utf-8,' +
+'Category,Amount (£)\n' +
+rows.map(r => r.map(x => String(x).replaceAll(',', ' ')).join(',')).join('\n');
+
+const a = document.createElement('a');
+a.href = encodeURI(csv);
+a.download = `monthly_expenses_${month.replace(/-/g,'_') || 'unspecified'}.csv`;
+document.body.appendChild(a);
+a.click();
+a.remove();
+});
+
+// Reset
+byId('resetBtn').addEventListener('click', () => {
+[
+'rent','council','wifi','electricity','water',
+'subNetflix','subPrime','subSpotify','subOther',
+'youIncome','partnerIncome'
+].forEach(id => byId(id).value='');
+
+byId('monthInput').value = '';
+
+partnerTgl.checked = false;
+splitIncomeAll.checked = true;
+splitIncomePriority.checked = false;
+splitEqual.checked = false;
+splitPercent.checked = false;
+
+youPctInput.value = 50;
+updatePercent();
+
+extrasEl.innerHTML = '';
+addExtraRow(); addExtraRow(); addExtraRow();
+
+chartMode = 'all';
+refreshPartnerUI();
+calculate();
+});
+
+updatePercent();
+refreshPartnerUI();
+calculate();
+</script>
 </body>
 </html>
