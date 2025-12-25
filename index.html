@@ -5,140 +5,196 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>UK Student Cost of Living Tracker</title>
-
-  <!-- Use system fonts only (no external font links to avoid rendering issues) -->
-
-  <!-- Absolute CSS path so GitHub Pages always finds it -->
-  <link relliving-tracker/style.css
 </head>
-<body>
-  <div class="center">
-    <div class="wrap">
-      <h1 class="title">UK Student Cost of Living</h1>
-      <p class="subtitle">A minimal, experimentative budgeting tool for living in London.</p>
+<body
+  style="
+    margin:0;
+    height:100vh;
+    display:grid;
+    grid-template-rows:1fr auto;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:#ffffff;
+    background:
+      linear-gradient(180deg, rgba(8,17,28,0.80), rgba(8,17,28,0.85)),
+      url('https://images.unsplash.com/photo-1543512218-d4d483b70f37?auto=format&fit=crop&w=1800&q=80')
+      center/cover no-repeat fixed;
+  "
+>
+  <!-- Centered wrapper -->
+  <div style="display:flex;align-items:center;justify-content:center;padding:48px 16px;">
+    <div style="width:100%;max-width:900px;">
+      <h1 style="margin:0 0 8px 0;font-weight:700;text-align:center;">UK Student Cost of Living</h1>
+      <p style="text-align:center;color:#cbd5e1;font-size:14px;margin:0 0 18px 0;">
+        A minimal, experimentative budgeting tool for living in London.
+      </p>
 
-      <div class="card">
+      <!-- Glass card -->
+      <div
+        style="
+          background:rgba(255,255,255,0.08);
+          backdrop-filter:blur(12px);
+          -webkit-backdrop-filter:blur(12px);
+          border-radius:20px;
+          padding:24px;
+          border:1px solid rgba(255,255,255,0.18);
+          box-shadow:0 10px 30px rgba(0,0,0,0.35);
+        "
+      >
         <!-- Top bar -->
-        <div class="topbar">
-          <div class="left">
-            <label class="pill">
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px;">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <label style="display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);">
               <span>Month</span>
-              <input id="monthInput" type="month" />
+              <input id="monthInput" type="month"
+                style="padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
             </label>
-            <span class="muted">Pick the month you're budgeting for</span>
+            <span style="color:#cbd5e1;font-size:12px;">Pick the month you're budgeting for</span>
           </div>
-          <div class="actions">
-            <button class="btn secondary" id="resetBtn">Reset</button>
-            <button class="btn" id="exportBtn">Export CSV</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button id="resetBtn"
+              style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.16);color:#fff;cursor:pointer;">
+              Reset
+            </button>
+            <button id="exportBtn"
+              style="padding:12px 14px;border-radius:12px;border:none;background:#0ea5e9;color:#082032;font-weight:600;cursor:pointer;">
+              Export CSV
+            </button>
           </div>
         </div>
 
         <!-- Two-column grid -->
-        <div class="grid">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
           <!-- Base expenses -->
           <div>
-            <div class="row">
-              <label>Rent</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="rent" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <!-- Reusable input style -->
+            <!-- (we inline styles on each input to guarantee consistent look) -->
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Rent</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="rent" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
-            <div class="row">
-              <label>Council Tax</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="council" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Council Tax</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="council" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
-            <div class="row">
-              <label>Wi‑Fi / Broadband</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="wifi" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Wi‑Fi / Broadband</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="wifi" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
-            <div class="row">
-              <label>Phone Bill</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="phone" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Phone Bill</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="phone" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
-            <div class="row">
-              <label>Credit Card Repayments</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="credit" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Credit Card Repayments</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="credit" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
-            <div class="row">
-              <label>Groceries</label>
-              <div class="field">
-                <span class="prefix">£</span>
-                <input id="groceries" class="input" type="number" placeholder="0.00" min="0" step="0.01">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Groceries</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#93c5fd;font-weight:600;">£</span>
+                <input id="groceries" type="number" placeholder="0.00" step="0.01" min="0"
+                  style="width:100%;padding:14px 12px 14px 38px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;outline:none;">
               </div>
             </div>
           </div>
 
           <!-- Partner & extras -->
           <div>
-            <div class="row">
-              <label>Partner Split</label>
-              <div class="radio-row">
-                <label class="radio"><input id="partnerToggle" type="checkbox"> Add partner split</label>
-                <label class="pill"><input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal</label>
-                <label class="pill"><input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage</label>
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Partner Split</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <label><input id="partnerToggle" type="checkbox"> Add partner split</label>
+                <label style="display:flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+                  <input type="radio" name="splitType" id="splitEqual" value="equal" checked> Equal
+                </label>
+                <label style="display:flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;border:1px dashed rgba(255,255,255,0.30);">
+                  <input type="radio" name="splitType" id="splitPercent" value="percent"> Percentage
+                </label>
               </div>
-              <div id="percentRow" class="muted" style="display:none; margin-top:8px;">
-                <div class="pct-row">
+              <div id="percentRow" style="display:none;margin-top:8px;color:#cbd5e1;font-size:12px;">
+                <div style="display:flex;gap:10px;align-items:center;">
                   <span>Your share %</span>
-                  <input id="youPct" type="number" min="0" max="100" step="1" value="50" class="pct-input">
+                  <input id="youPct" type="number" min="0" max="100" step="1" value="50"
+                    style="width:80px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.10);color:#fff;">
                   <span>Partner % = <span id="partnerPctText">50</span></span>
                 </div>
               </div>
             </div>
 
-            <div class="row">
-              <label>Extra Expenses</label>
-              <div id="extras" class="extras"></div>
-              <div class="actions">
-                <button class="btn ghost" id="addExtraBtn">+ Add extra</button>
+            <div style="margin-bottom:12px;">
+              <label style="display:block;margin-bottom:8px;">Extra Expenses</label>
+              <div id="extras"></div>
+              <div style="display:flex;gap:10px;margin-top:8px;">
+                <button id="addExtraBtn"
+                  style="padding:12px 14px;border-radius:12px;border:1px dashed rgba(255,255,255,0.30);background:transparent;color:#fff;cursor:pointer;">
+                  + Add extra
+                </button>
               </div>
-              <div class="muted">Add custom lines (e.g., travel, books, societies, gym).</div>
+              <div style="color:#cbd5e1;font-size:12px;">Add custom lines (e.g., travel, books, societies, gym).</div>
             </div>
           </div>
         </div>
 
         <!-- Bottom actions -->
-        <div class="actions center-actions">
-          <button class="btn" id="calcBtn">Calculate</button>
-          <button class="btn secondary" id="togglePanelBtn">View Results</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px;">
+          <button id="calcBtn"
+            style="padding:12px 14px;border-radius:12px;border:none;background:#0ea5e9;color:#082032;font-weight:600;cursor:pointer;">
+            Calculate
+          </button>
+          <button id="togglePanelBtn"
+            style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.16);color:#fff;cursor:pointer;">
+            View Results
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Floating Results -->
-  <button class="btn floating-toggle" id="fabBtn">Results</button>
-  <div class="floating-panel" id="panel">
-    <div class="panel-title">Results <span id="monthLabel" class="muted"></span></div>
-    <div class="panel-line"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
-    <div class="panel-line"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
-    <div id="partnerBreak" style="display:none; margin-top:8px;">
-      <div class="panel-line"><span>Your share</span><strong id="yourShare">£0.00</strong></div>
-      <div class="panel-line"><span>Partner share</span><strong id="partnerShare">£0.00</strong></div>
-      <div class="muted">Split: <span id="splitDesc">Equal</span></div>
+  <button id="fabBtn"
+    style="position:fixed;bottom:22px;right:22px;padding:12px 14px;border-radius:999px;border:none;background:#0ea5e9;color:#082032;font-weight:600;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+    Results
+  </button>
+  <div id="panel"
+    style="position:fixed;bottom:90px;right:22px;max-width:360px;background:rgba(255,255,255,0.10);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.20);border-radius:16px;padding:16px;display:none;">
+    <div style="font-weight:600;margin-bottom:8px;">
+      Results <span id="monthLabel" style="color:#cbd5e1;font-size:12px;"></span>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Monthly total</span><strong id="monthlyTotal">£0.00</strong></div>
+    <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Yearly total</span><strong id="yearlyTotal">£0.00</strong></div>
+    <div id="partnerBreak" style="display:none;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Your share</span><strong id="yourShare">£0.00</strong></div>
+      <div style="display:flex;justify-content:space-between;margin:6px 0;"><span>Partner share</span><strong id="partnerShare">£0.00</strong></div>
+      <div style="color:#cbd5e1;font-size:12px;">Split: <span id="splitDesc">Equal</span></div>
     </div>
   </div>
 
   <!-- Footer credit -->
-  <footer>
+  <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31/a>
-  </footer>
+    <a href="https://uk.linkedin.com/in/shounakbhattacharjee31" target="_ter>
 
-  <!-- Absolute JS path -->
+  <!-- External JS only (avoid inline script parsing issues) -->
   /cost-of-living-tracker/script.js</script>
 </body>
 </html>
