@@ -245,22 +245,15 @@
   <!-- Footer credit -->
   <footer style="text-align:center;padding:14px;color:#cbd5e1;font-size:13px;">
     Created by <strong>Shounak Bhattacharjee</strong> •
-    <a href="https://uk.linkedin.com/in/shounakbhattacharjeen</a>
+    <a href="https://uk.linkedin.com/in/shounakbhattachnkedIn</a>
   </footer>
 
   <!-- Inline JS -->
   <script>
     // -------- Helpers (robust & safe) --------
     function byId(id){ return document.getElementById(id); }
-    function toGBP(n){
-      const v = Number.isFinite(+n) ? +n : 0;
-      return "£" + v.toFixed(2);
-    }
-    function num(id){
-      const el = byId(id);
-      const v = el ? parseFloat(el.value) : NaN;
-      return Number.isFinite(v) ? v : 0;
-    }
+    function toGBP(n){ const v = Number.isFinite(+n) ? +n : 0; return "£" + v.toFixed(2); }
+    function num(id){ const el = byId(id); const v = el ? parseFloat(el.value) : NaN; return Number.isFinite(v) ? v : 0; }
     function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
     // DOM refs
@@ -380,12 +373,12 @@
     }
 
     // ----- Chart (no external libraries) -----
-    const CHART_COLORS = [
-      '#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa',
-      '#2dd4bf','#f472b6','#fb7185','#c084fc','#22c55e'
-    ];
+    const CHART_COLORS = ['#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf','#f472b6','#fb7185','#c084fc','#22c55e'];
     function drawBreakdownChart(items){
+      if (!chartCanvas || typeof chartCanvas.getContext !== 'function'){ return; }
       const ctx = chartCanvas.getContext('2d');
+      if (!ctx){ chartLegend.innerHTML = '<div style="color:#cbd5e1;">Chart unavailable</div>'; return; }
+
       // HiDPI handling
       const dpr = window.devicePixelRatio || 1;
       const cssSize = 260;
@@ -436,85 +429,75 @@
 
     // ----- Core calculation -----
     function calculate(){
-      try{
-        // Priority base categories (keep this order)
-        const base = [
-          ['Rent',        num('rent')],
-          ['Council Tax', num('council')],
-          ['Water',       num('water')],
-          ['Electricity', num('electricity')],
-          ['Wi‑Fi',       num('wifi')],
-          ['Subscriptions', num('groceries')],
-        ];
-        const extras = gatherExtras();
+      // Priority base categories (keep this order)
+      const base = [
+        ['Rent',        num('rent')],
+        ['Council Tax', num('council')],
+        ['Water',       num('water')],
+        ['Electricity', num('electricity')],
+        ['Wi‑Fi',       num('wifi')],
+        ['Subscriptions', num('groceries')],
+      ];
+      const extras = gatherExtras();
 
-        const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v || 0), 0);
-        const yearly  = monthly * 12;
+      const monthly = [...base, ...extras].reduce((s, [,v]) => s + Number(v || 0), 0);
+      const yearly  = monthly * 12;
 
-        // Always show inline totals
-        inlineMonthly.textContent = toGBP(monthly);
-        inlineYearly.textContent  = toGBP(yearly);
-        monthlyTotalEl.textContent = toGBP(monthly);
-        yearlyTotalEl.textContent  = toGBP(yearly);
+      // Always show inline totals
+      inlineMonthly.textContent = toGBP(monthly);
+      inlineYearly.textContent  = toGBP(yearly);
+      monthlyTotalEl.textContent = toGBP(monthly);
+      yearlyTotalEl.textContent  = toGBP(yearly);
 
-        // Month label
-        const m = byId('monthInput').value || '';
-        monthLabelEl.textContent = m ? `• ${m}` : '';
+      // Month label
+      const m = byId('monthInput').value || '';
+      monthLabelEl.textContent = m ? `• ${m}` : '';
 
-        // Partner split
-        if (partnerTgl.checked){
-          partnerBreakEl.style.display = 'block';
-          if (splitPercent.checked){
-            const youPct = clamp(parseFloat(youPctInput.value) || 0, 0, 100);
-            const yourShare    = monthly * (youPct/100);
-            const partnerShare = monthly - yourShare;
-            yourShareEl.textContent    = toGBP(yourShare);
-            partnerShareEl.textContent = toGBP(partnerShare);
-            splitDescEl.textContent    = `Percentage (${youPct.toFixed(0)}% / ${(100-youPct).toFixed(0)}%)`;
-          } else {
-            const share = monthly / 2;
-            yourShareEl.textContent    = toGBP(share);
-            partnerShareEl.textContent = toGBP(share);
-            splitDescEl.textContent    = 'Equal (50% / 50%)';
-          }
-
-          // Incomes / leftover (optional display)
-          const yi = Math.max(0, parseFloat(youIncomeEl.value) || 0);
-          const pi = Math.max(0, parseFloat(partnerIncomeEl.value) || 0);
-          const usingPct = splitPercent.checked ? clamp(parseFloat(youPctInput.value) || 0, 0, 100) : 50;
-          const ys = monthly * (usingPct/100);
-          const ps = monthly - ys;
-          if (yi > 0 || pi > 0){
-            incomePanel.style.display = 'block';
-            yourIncomePanel.textContent = toGBP(yi);
-            partnerIncomePanel.textContent = toGBP(pi);
-            yourLeftoverEl.textContent = toGBP(yi - ys);
-            partnerLeftoverEl.textContent = toGBP(pi - ps);
-          } else {
-            incomePanel.style.display = 'none';
-          }
+      // Partner split
+      if (partnerTgl.checked){
+        partnerBreakEl.style.display = 'block';
+        if (splitPercent.checked){
+          const youPct = clamp(parseFloat(youPctInput.value) || 0, 0, 100);
+          const yourShare    = monthly * (youPct/100);
+          const partnerShare = monthly - yourShare;
+          yourShareEl.textContent    = toGBP(yourShare);
+          partnerShareEl.textContent = toGBP(partnerShare);
+          splitDescEl.textContent    = `Percentage (${youPct.toFixed(0)}% / ${(100-youPct).toFixed(0)}%)`;
         } else {
-          partnerBreakEl.style.display = 'none';
+          const share = monthly / 2;
+          yourShareEl.textContent    = toGBP(share);
+          partnerShareEl.textContent = toGBP(share);
+          splitDescEl.textContent    = 'Equal (50% / 50%)';
         }
 
-        // Pie chart data (exclude zeros)
-        const items = [...base, ...extras]
-          .filter(([,v]) => Number(v) > 0)
-          .map(([label, v]) => ({ label, value: Number(v) }));
-        drawBreakdownChart(items);
-
-      } catch(err){
-        // Fail-safe: never break UI; show £0.00 and empty chart
-        inlineMonthly.textContent = '£0.00';
-        inlineYearly.textContent  = '£0.00';
-        monthlyTotalEl.textContent = '£0.00';
-        yearlyTotalEl.textContent  = '£0.00';
+        // Incomes / leftover (optional display)
+        const yi = Math.max(0, parseFloat(youIncomeEl.value) || 0);
+        const pi = Math.max(0, parseFloat(partnerIncomeEl.value) || 0);
+        const usingPct = splitPercent.checked ? clamp(parseFloat(youPctInput.value) || 0, 0, 100) : 50;
+        const ys = monthly * (usingPct/100);
+        const ps = monthly - ys;
+        if (yi > 0 || pi > 0){
+          incomePanel.style.display = 'block';
+          yourIncomePanel.textContent = toGBP(yi);
+          partnerIncomePanel.textContent = toGBP(pi);
+          yourLeftoverEl.textContent = toGBP(yi - ys);
+          partnerLeftoverEl.textContent = toGBP(pi - ps);
+        } else {
+          incomePanel.style.display = 'none';
+        }
+      } else {
         partnerBreakEl.style.display = 'none';
-        drawBreakdownChart([]);
-        // Optional: console.error for debugging
-        console.error('Calculation error:', err);
+        incomePanel.style.display = 'none';
       }
+
+      // Pie chart data (exclude zeros)
+      const items = [...base, ...extras]
+        .filter(([,v]) => Number(v) > 0)
+        .map(([label, v]) => ({ label, value: Number(v) }));
+      drawBreakdownChart(items);
     }
+    // Expose for debugging if needed
+    window.calculate = calculate;
 
     // ----- Export CSV (includes incomes & split) -----
     byId('exportBtn').addEventListener('click', () => {
@@ -538,7 +521,7 @@
       if (yi > 0 || pi > 0){
         rows.push(['Your Income', yi.toFixed(2)]);
         rows.push(['Partner Income', pi.toFixed(2)]);
-        const rec = Math.round(recommendedYouPct());
+        const rec = Math.round((yi + pi) > 0 ? (yi / (yi + pi)) * 100 : 50);
         rows.push(['Recommended Split (Income)', `${rec}% / ${(100-rec)}%`]);
       }
       if (partnerTgl.checked){
